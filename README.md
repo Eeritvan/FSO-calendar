@@ -2,8 +2,8 @@
 
 ## tech-stack
 - frontend
-  - next.js
+  - react
 - api
   - graphql
 - backend
-  - supabase
+  - mongodb
