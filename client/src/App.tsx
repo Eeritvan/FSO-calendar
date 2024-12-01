@@ -1,18 +1,26 @@
-import { useState } from 'react'
+import { lazy, Suspense } from 'react'
+import { Router, Link, Route, Switch } from 'wouter'
 
-function App() {
-  const [counter, setCounter] = useState(0)
+const Settings = lazy(() => import('./routes/settings'))
+const Users = lazy(() => import('./routes/users'))
 
-  const handleEvent = (e) => {
-    e.preventDefault()
-    setCounter(prevCounter => prevCounter + 1)
-  }
-
+const App = () => {
   return (
-    <form>
-      <div>{counter}</div>
-      <button onClick={e => handleEvent(e)}> test</button>
-    </form>
+    <Router>
+      <div>
+        <Link to='/settings'>settings</Link>
+        <Link to='/users/321'>users</Link>
+      </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          <Route path='/settings' component={Settings} />
+          <Route path='/users/:name' component={Users} />
+          <Route>
+            404: No such page!
+          </Route>
+        </Switch>
+      </Suspense>
+    </Router>
   )
 }
 
