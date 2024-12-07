@@ -31,7 +31,8 @@ export default tseslint.config(
       'no-trailing-spaces': 'error',
       'linebreak-style': ['error', 'unix'],
       'arrow-spacing': ['error', { 'before': true, 'after': true }],
-      'object-curly-spacing': ['error', 'always']
+      'object-curly-spacing': ['error', 'always'],
+      'max-len': ["error", 80]
     },
   },
 )
