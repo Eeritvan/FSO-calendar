@@ -1,9 +1,9 @@
 import { lazy, Suspense } from 'react'
 import { Route, Switch } from 'wouter'
 
-const Settings = lazy(() => import('../../routes/settings'))
-const Users = lazy(() => import('../../routes/users'))
-const Counter = lazy(() => import('../../routes/counter'))
+const Settings = lazy(() => import('../settings'))
+const Users = lazy(() => import('../users'))
+const Counter = lazy(() => import('../counter'))
 
 const SidePanel = () => {
   return (
