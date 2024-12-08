@@ -6,11 +6,11 @@ import './index.css'
 import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 
-import counterReducer from './reducers/counterReducer'
+import settingsReducer from './reducers/settingsReducer'
 
 const store = configureStore({
   reducer: {
-    testi: counterReducer,
+    settings: settingsReducer,
   },
 })
 

@@ -3,7 +3,6 @@ import { Route, Switch } from 'wouter'
 
 const Settings = lazy(() => import('../settings'))
 const Users = lazy(() => import('../users'))
-const Counter = lazy(() => import('../counter'))
 
 const SidePanel = () => {
   return (
@@ -11,7 +10,6 @@ const SidePanel = () => {
       <Switch>
         <Route path='/settings' component={Settings} />
         <Route path='/users/:name' component={Users} />
-        <Route path='/counter' component={Counter} />
         <Route> 404: No such page! </Route>
       </Switch>
     </Suspense>

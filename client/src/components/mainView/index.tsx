@@ -7,8 +7,6 @@ const MainView = () => {
       <br />
       <Link to='/users/321'>users</Link>
       <br />
-      <Link to='/counter'>counter</Link>
-      <br />
     </>
   )
 }
