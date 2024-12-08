@@ -10,18 +10,23 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 
 import { valibotResolver } from '@hookform/resolvers/valibot'
-import * as v from 'valibot'
+import { object, pipe, string, minLength, endsWith } from 'valibot'
 
-const schema = v.object({
-  text: v.pipe(
-    v.string('username is required'),
-    v.minLength(3, 'Needs to be at least 3 characters')
+const schema = object({
+  text: pipe(
+    string('username is required'),
+    minLength(3, 'Needs to be at least 3 characters')
   ),
-  password: v.pipe(
-    v.string('password is required'),
-    v.endsWith('cool', 'Needs to end with `cool`')
+  password: pipe(
+    string('password is required'),
+    endsWith('cool', 'Needs to end with `cool`')
   )
 })
+
+interface FormData {
+  text: string;
+  password: string;
+}
 
 interface RootState {
   settings: SettingsState;
@@ -31,7 +36,7 @@ const Settings = () => {
   const dispatch = useDispatch()
   const settings = useSelector((state: RootState) => state.settings)
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: valibotResolver(schema)
   })
   const onSubmit = (data: FormData) => dispatch(writeSomething(data.text))
