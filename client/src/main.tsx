@@ -10,8 +10,8 @@ import settingsReducer from './reducers/settingsReducer'
 
 const store = configureStore({
   reducer: {
-    settings: settingsReducer,
-  },
+    settings: settingsReducer
+  }
 })
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
