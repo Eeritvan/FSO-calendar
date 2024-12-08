@@ -7,7 +7,7 @@ import tseslint from 'typescript-eslint'
 export default tseslint.config(
   tseslint.configs.strict,
   tseslint.configs.stylistic,
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'src/components/ui'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
