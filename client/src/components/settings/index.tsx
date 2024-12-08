@@ -1,10 +1,8 @@
 import { useForm, SubmitHandler } from 'react-hook-form'
 
-
 let renderCount = 0
 
 const Settings = () => {
-  console.log('opened settings')
   renderCount++
 
   const { register, handleSubmit } = useForm()

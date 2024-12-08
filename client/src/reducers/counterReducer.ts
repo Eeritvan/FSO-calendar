@@ -4,8 +4,7 @@ const counterSlice = createSlice({
   name: 'counter',
   initialState: 0,
   reducers: {
-    setCounter(state, action) {
-      console.log(action.payload)
+    setCounter(action) {
       return action.payload
     },
     increaseCounter(state) {
@@ -20,5 +19,10 @@ const counterSlice = createSlice({
   },
 })
 
-export const { setCounter, increaseCounter, decreaseCounter, resetCounter } = counterSlice.actions
+export const {
+  setCounter,
+  increaseCounter,
+  decreaseCounter,
+  resetCounter
+} = counterSlice.actions
 export default counterSlice.reducer
