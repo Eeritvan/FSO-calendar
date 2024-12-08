@@ -15,7 +15,7 @@ import * as v from 'valibot'
 const schema = v.object({
   text: v.pipe(
     v.string('username is required'),
-    v.minLength(3, 'Needs to be at least 3 characters'),
+    v.minLength(3, 'Needs to be at least 3 characters')
   ),
   password: v.pipe(
     v.string('password is required'),
@@ -32,7 +32,7 @@ const Settings = () => {
   const settings = useSelector((state: RootState) => state.settings)
 
   const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: valibotResolver(schema),
+    resolver: valibotResolver(schema)
   })
   const onSubmit = (data: FormData) => dispatch(writeSomething(data.text))
 

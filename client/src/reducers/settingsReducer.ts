@@ -7,7 +7,7 @@ export interface SettingsState {
 
 const initialState: SettingsState = {
   darkMode: false,
-  text: '',
+  text: ''
 }
 
 const settingsSlice = createSlice({
@@ -22,8 +22,8 @@ const settingsSlice = createSlice({
     },
     resetSettings() {
       return initialState
-    },
-  },
+    }
+  }
 })
 
 export const {

@@ -2,7 +2,7 @@ import { Router } from 'wouter'
 import {
   ResizableHandle,
   ResizablePanel,
-  ResizablePanelGroup,
+  ResizablePanelGroup
 } from '@/components/ui/resizable'
 import SidePanel from './components/sidePanel'
 import MainView from './components/mainView'
