@@ -28,6 +28,7 @@ export default tseslint.config(
       semi: ['error', 'never'],
       quotes: ['error', 'single'],
       indent: ['error', 2],
+      camelcase: ['error', { 'properties': 'always' }],
       'no-trailing-spaces': 'error',
       'linebreak-style': ['error', 'unix'],
       'arrow-spacing': ['error', { 'before': true, 'after': true }],
@@ -36,7 +37,8 @@ export default tseslint.config(
       'no-console': ['error'],
       'no-duplicate-imports': ['error'],
       'no-multiple-empty-lines': ['error', { 'max': 1 }],
-      'camelcase': ['error', { 'properties': 'always' }]
+      "eol-last": ["error", "always"],
+      'comma-dangle': ['error', 'never']
     },
   },
 )
