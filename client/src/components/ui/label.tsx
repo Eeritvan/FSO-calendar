@@ -1,4 +1,4 @@
-import { forwardRef, ElementRef, ComponentPropsWithoutRef } from "react"
+import { forwardRef, ElementRef, ComponentPropsWithoutRef, memo } from "react"
 import { Root as LabelRoot } from "@radix-ui/react-label"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -8,7 +8,7 @@ const labelVariants = cva(
   "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 )
 
-const Label = forwardRef<
+const Label = memo(forwardRef<
   ElementRef<typeof LabelRoot>,
   ComponentPropsWithoutRef<typeof LabelRoot> &
     VariantProps<typeof labelVariants>
@@ -18,7 +18,7 @@ const Label = forwardRef<
     className={cn(labelVariants(), className)}
     {...props}
   />
-))
+)))
 Label.displayName = LabelRoot.displayName
 
 export { Label }
