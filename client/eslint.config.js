@@ -28,8 +28,9 @@ export default tseslint.config(
       semi: ['error', 'never'],
       quotes: ['error', 'single'],
       indent: ['error', 2],
+      eqeqeq: ['error'],
       camelcase: ['error', { 'properties': 'always' }],
-      'no-trailing-spaces': 'error',
+      'no-trailing-spaces': ['error'],
       'linebreak-style': ['error', 'unix'],
       'arrow-spacing': ['error', { 'before': true, 'after': true }],
       'object-curly-spacing': ['error', 'always'],
@@ -40,7 +41,10 @@ export default tseslint.config(
       "eol-last": ['error', "always"],
       'comma-dangle': ['error', 'never'],
       'max-depth': ['error', 2],
-      'no-else-return': ['error']
+      'no-else-return': ['error'],
+      'comma-spacing': ['error', { 'before': false, 'after': true }],
+      'no-var': ['error'],
+      'prefer-const': ['error']
     }
   }
 )
