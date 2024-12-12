@@ -33,12 +33,14 @@ export default tseslint.config(
       'linebreak-style': ['error', 'unix'],
       'arrow-spacing': ['error', { 'before': true, 'after': true }],
       'object-curly-spacing': ['error', 'always'],
-      'max-len': ["error", 80],
+      'max-len': ['error', 80],
       'no-console': ['error'],
       'no-duplicate-imports': ['error'],
       'no-multiple-empty-lines': ['error', { 'max': 1 }],
-      "eol-last": ["error", "always"],
-      'comma-dangle': ['error', 'never']
-    },
-  },
+      "eol-last": ['error', "always"],
+      'comma-dangle': ['error', 'never'],
+      'max-depth': ['error', 2],
+      'no-else-return': ['error']
+    }
+  }
 )
