@@ -1,14 +1,7 @@
 import { useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  toggleDarkMode,
-  writeSomething,
-  resetSettings,
-  SettingsState
-} from '../../reducers/settingsReducer'
+import useSettingsSlice from '../../store/settingsStore'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { object, pipe, string, minLength, endsWith } from 'valibot'
 
@@ -28,25 +21,37 @@ interface FormData {
   password: string;
 }
 
-interface RootState {
-  settings: SettingsState;
-}
-
 const Settings = () => {
-  const dispatch = useDispatch()
-  const settings = useSelector((state: RootState) => state.settings)
+  const {
+    darkMode,
+    text,
+    toggleDarkMode,
+    writeSomething,
+    resetSettings
+  } = useSettingsSlice()
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<FormData>({
     resolver: valibotResolver(schema)
   })
-  const onSubmit = (data: FormData) => dispatch(writeSomething(data.text))
+
+  const onSubmit = (data: FormData) => writeSomething(data.text)
+
+  const handleReset = () => {
+    resetSettings()
+    reset()
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Switch
         id='dark-mode'
-        checked={settings.darkMode}
-        onCheckedChange={() => dispatch(toggleDarkMode())}
+        checked={darkMode}
+        onCheckedChange={toggleDarkMode}
       />
       <Label htmlFor='dark-mode'>Toggle darkmode</Label>
       <br />
@@ -55,10 +60,9 @@ const Settings = () => {
       <input {...register('password')} />
       <input type='submit' />
 
-      <div> Text: {settings.text} </div>
-      {errors.text && <p>{errors.text.message}</p>}
-      <button onClick={() => dispatch(resetSettings())}> reset </button>
-
+      <div> Text: {text} </div>
+      {errors.text && <p>{errors.text.message}</p>}s
+      <button onClick={handleReset}> reset </button>
     </form>
   )
 }
