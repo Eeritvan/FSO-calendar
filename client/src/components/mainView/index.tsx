@@ -27,19 +27,20 @@ const MainView = () => {
 
   return (
     <div className='bg-blue-600 rounded-lg p-2 m-1'>
-      <Link to='/settings'>settings</Link>
-      <br />
       {events && events.map((x: Events) => (
         <>
-          <br />
           <div>
             <p> {x.id} </p>
             <p> {x.date} </p>
             <p> {x.title} </p>
             <p> {x.description} </p>
           </div>
+          <br />
         </>
       ))}
+      <Link href="/add-new">
+        <button>add new</button>
+      </Link>
     </div>
   )
 }

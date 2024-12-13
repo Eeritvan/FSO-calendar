@@ -11,6 +11,9 @@ const App = () => {
         direction="horizontal"
         gutterSize={5}
         sizes={[25, 75]}
+        gutterAlign="center"
+        minSize={[100, 300]}
+        maxSize={[500, Infinity]}
       >
         <SidePanel />
         <MainView />

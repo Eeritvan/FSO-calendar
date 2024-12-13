@@ -61,7 +61,7 @@ const Settings = () => {
       <input type='submit' />
 
       <div> Text: {text} </div>
-      {errors.text && <p>{errors.text.message}</p>}s
+      {errors.text && <p>{errors.text.message}</p>}
       <button onClick={handleReset}> reset </button>
     </form>
   )
