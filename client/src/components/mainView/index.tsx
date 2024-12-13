@@ -2,14 +2,14 @@ import { Link } from 'wouter'
 import { useQuery } from '@tanstack/react-query'
 import ky from 'ky'
 
-type Todo = {
+interface Todo {
   id: number
   todo: string
   completed: boolean
   userId: number
 }
 
-type TodosResponse = {
+interface TodosResponse {
   todos: Todo[]
   total: number
   skip: number
@@ -19,7 +19,7 @@ type TodosResponse = {
 const MainView = () => {
   const result = useQuery<TodosResponse>({
     queryKey: ['todos'],
-    queryFn: () => ky('https://dummyjson.com/todos').json(),
+    queryFn: () => ky('https://dummyjson.com/todos').json()
   })
 
   if (result.isLoading) {
@@ -31,7 +31,6 @@ const MainView = () => {
   }
 
   const todos = result.data?.todos
-  console.log(todos)
 
   return (
     <div className='bg-blue-600 rounded-lg p-2 m-1'>
