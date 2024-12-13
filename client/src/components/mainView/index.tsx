@@ -19,7 +19,7 @@ interface TodosResponse {
 const MainView = () => {
   const result = useQuery<TodosResponse>({
     queryKey: ['todos'],
-    queryFn: () => ky('https://dummyjson.com/todos').json()
+    queryFn: () => ky('http://127.0.0.1:3000/').json()
   })
 
   if (result.isLoading) {
@@ -30,7 +30,7 @@ const MainView = () => {
     return <div>Error: {result.error.message}</div>
   }
 
-  const todos = result.data?.todos
+  const todos = result.data
 
   return (
     <div className='bg-blue-600 rounded-lg p-2 m-1'>
