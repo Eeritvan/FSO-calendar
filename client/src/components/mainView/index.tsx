@@ -2,23 +2,16 @@ import { Link } from 'wouter'
 import { useQuery } from '@tanstack/react-query'
 import ky from 'ky'
 
-interface Todo {
+interface Events {
   id: number
-  todo: string
-  completed: boolean
-  userId: number
-}
-
-interface TodosResponse {
-  todos: Todo[]
-  total: number
-  skip: number
-  limit: number
+  date: string
+  title: string
+  description: string
 }
 
 const MainView = () => {
-  const result = useQuery<TodosResponse>({
-    queryKey: ['todos'],
+  const result = useQuery<Events[]>({
+    queryKey: ['events'],
     queryFn: () => ky('http://127.0.0.1:3000/').json()
   })
 
@@ -30,13 +23,23 @@ const MainView = () => {
     return <div>Error: {result.error.message}</div>
   }
 
-  const todos = result.data
+  const events = result.data
 
   return (
     <div className='bg-blue-600 rounded-lg p-2 m-1'>
       <Link to='/settings'>settings</Link>
       <br />
-      <pre>{JSON.stringify(todos, null, 2)}</pre>
+      {events && events.map((x: Events) => (
+        <>
+          <br />
+          <div>
+            <p> {x.id} </p>
+            <p> {x.date} </p>
+            <p> {x.title} </p>
+            <p> {x.description} </p>
+          </div>
+        </>
+      ))}
     </div>
   )
 }
