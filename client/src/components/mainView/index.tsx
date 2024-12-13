@@ -36,8 +36,6 @@ const MainView = () => {
     <div className='bg-blue-600 rounded-lg p-2 m-1'>
       <Link to='/settings'>settings</Link>
       <br />
-      <Link to='/users/321'>users</Link>
-      <br />
       <pre>{JSON.stringify(todos, null, 2)}</pre>
     </div>
   )
