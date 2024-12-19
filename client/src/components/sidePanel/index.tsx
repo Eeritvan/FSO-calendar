@@ -1,12 +1,24 @@
 import { lazy, Suspense } from 'react'
 import { Route, Switch, Link } from 'wouter'
+import { motion } from 'motion/react'
+import usePanelSizeSlice from '../../store/panelSizeStore'
 
 const Settings = lazy(() => import('../settings'))
 const addNew = lazy(() => import('../addNew'))
 
 const SidePanel = () => {
+  const { dragging, defaultSize, expandedView } = usePanelSizeSlice()
+
   return (
-    <div className='bg-red-600 rounded-lg p-2 m-1'>
+    <motion.div
+      animate={{ width: expandedView ? '25%' : `${defaultSize}%` }}
+      transition={dragging ? { duration: 0 } : {
+        type: 'spring',
+        stiffness: 300,
+        damping: 20
+      }}
+      className='bg-red-600 rounded-lg p-2 m-1'
+    >
       <Link to='/settings'>settings</Link>
       <br />
       <Suspense fallback={<div>Loading...</div>}>
@@ -16,7 +28,7 @@ const SidePanel = () => {
           <Route> 404: No such page! </Route>
         </Switch>
       </Suspense>
-    </div>
+    </motion.div>
   )
 }
 

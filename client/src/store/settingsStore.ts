@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
 
 export interface SettingsState {
   darkMode: boolean
@@ -14,11 +15,11 @@ const initialState:
     text: ''
   }
 
-const useSettingsSlice = create<SettingsState>()((set) => ({
+const useSettingsSlice = create<SettingsState>()(devtools((set) => ({
   ...initialState,
   toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
-  writeSomething: (text: string) => set({ text }),
+  writeSomething: (text) => set({ text }),
   resetSettings: () => set(() => ({ ...initialState }))
-}))
+})))
 
 export default useSettingsSlice
