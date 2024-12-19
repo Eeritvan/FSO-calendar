@@ -4,6 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import pluginQuery from '@tanstack/eslint-plugin-query'
+import reactCompiler from 'eslint-plugin-react-compiler'
 
 export default tseslint.config(
   tseslint.configs.strict,
