@@ -4,7 +4,7 @@ import { motion } from 'motion/react'
 import usePanelSizeSlice from '../../store/panelSizeStore'
 
 const Settings = lazy(() => import('../settings'))
-const addNew = lazy(() => import('../addNew'))
+const AddNew = lazy(() => import('../addNew'))
 
 const SidePanel = () => {
   const { dragging, defaultSize, expandedView } = usePanelSizeSlice()
@@ -24,7 +24,7 @@ const SidePanel = () => {
       <Suspense fallback={<div>Loading...</div>}>
         <Switch>
           <Route path='/settings' component={Settings} />
-          <Route path='/add-new' component={addNew} />
+          <Route path='/add-new' component={AddNew} />
           <Route> 404: No such page! </Route>
         </Switch>
       </Suspense>

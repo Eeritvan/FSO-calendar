@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { motion } from 'motion/react'
 import usePanelSizeSlice from '../../store/panelSizeStore'
 
-const addNew = () => {
+const AddNew = () => {
   const { setExpandedView } = usePanelSizeSlice()
 
   useEffect(() => {
@@ -11,7 +11,7 @@ const addNew = () => {
     return () => {
       setExpandedView(false)
     }
-  }, [])
+  }, [setExpandedView])
 
   return (
     <div>
@@ -25,4 +25,4 @@ const addNew = () => {
   )
 }
 
-export default addNew
+export default AddNew
