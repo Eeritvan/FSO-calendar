@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
-import { Route, Switch, Link } from 'wouter'
+import { Router, Route, Switch, Link } from 'wouter'
+import { useHashLocation } from 'wouter/use-hash-location'
 import { motion } from 'motion/react'
 import usePanelSizeSlice from '../../store/panelSizeStore'
 
@@ -19,15 +20,22 @@ const SidePanel = () => {
       }}
       className='bg-red-600 rounded-lg p-2 m-1'
     >
-      <Link to='/settings'>settings</Link>
-      <br />
-      <Suspense fallback={<div>Loading...</div>}>
-        <Switch>
-          <Route path='/settings' component={Settings} />
-          <Route path='/add-new' component={AddNew} />
-          <Route> 404: No such page! </Route>
-        </Switch>
-      </Suspense>
+      <Router hook={useHashLocation}>
+        <Link to='#settings'>
+          <button>settings</button>
+        </Link>
+        <Link to='#add-new'>
+          <button>add new</button>
+        </Link>
+        <br />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Switch>
+            <Route path='settings' component={Settings} />
+            <Route path='add-new' component={AddNew} />
+            <Route> 404: No such page! </Route>
+          </Switch>
+        </Suspense>
+      </Router>
     </motion.div>
   )
 }
