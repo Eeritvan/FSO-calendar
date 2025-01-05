@@ -9,26 +9,36 @@ import (
 	"fmt"
 	"graphql/graph/model"
 
-	"github.com/google/uuid"
 	"github.com/pquerna/otp/totp"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUserInput) (*model.User, error) {
 	key, _ := totp.Generate(totp.GenerateOpts{
+		Issuer:      "idk",
 		AccountName: input.Username,
 	})
 
 	secret := key.Secret()
-	user := &model.User{
-		ID:       uuid.New(),
-		Username: input.Username,
-		Password: input.Password,
-		Totp:     &secret,
+	fmt.Println(secret)
+
+	var user model.User
+	err := r.DB.QueryRow(ctx, `
+		INSERT INTO users (username, password_hash, totp_secret)
+		VALUES ($1, $2, $3)
+		RETURNING id, username, password_hash, totp_secret
+	`, input.Username, input.Password, secret).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Password,
+		&user.Totp,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("error creating user: %v", err)
 	}
 
-	r.UsersList = append(r.UsersList, user)
-	return user, nil
+	return &user, nil
 }
 
 // Login is the resolver for the login field.
@@ -38,7 +48,7 @@ func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (b
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	return r.UsersList, nil
+	panic(fmt.Errorf("not implemented: Users - users"))
 }
 
 // Mutation returns MutationResolver implementation.
