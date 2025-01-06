@@ -29,6 +29,12 @@ func UpdateUserTotp(ctx context.Context, db *pgx.Conn, username string, totpSecr
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
+	tx, txErr := db.Begin(ctx)
+	if txErr != nil {
+		return fmt.Errorf("failed to begin transaction: %v", txErr)
+	}
+	defer tx.Rollback(ctx)
+
 	_, err := db.Exec(ctx, `
         UPDATE users 
         SET totp = $2
@@ -37,12 +43,23 @@ func UpdateUserTotp(ctx context.Context, db *pgx.Conn, username string, totpSecr
 	if err != nil {
 		return fmt.Errorf("failed to update TOTP: %v", err)
 	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %v", err)
+	}
+
 	return nil
 }
 
 func CreateUser(ctx context.Context, db *pgx.Conn, username string, password []byte) (*model.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
+
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %v", err)
+	}
+	defer tx.Rollback(ctx)
 
 	var user model.User
 	if err := db.QueryRow(ctx, `
@@ -65,5 +82,10 @@ func CreateUser(ctx context.Context, db *pgx.Conn, username string, password []b
 			return nil, fmt.Errorf("error creating user: %v", err)
 		}
 	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %v", err)
+	}
+
 	return &user, nil
 }
