@@ -12,16 +12,16 @@ var (
 )
 
 func GeneratePasswordHash(password string) ([]byte, error) {
-	hashedPassword, pwErr := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if pwErr != nil {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
 		return nil, ErrPasswordHashingFail
 	}
 	return hashedPassword, nil
 }
 
 func ValidatePassword(hash string, password string) error {
-	decryptErr := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	if decryptErr != nil {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
 		return ErrIncorrectPassword
 	}
 	return nil

@@ -10,6 +10,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+const timeout = 5 * time.Second
+
 var (
 	ErrInformationFetch      = fmt.Errorf("failed to fetch user information")
 	ErrTransactionBeginFail  = fmt.Errorf("failed to begin transaction")
@@ -19,7 +21,7 @@ var (
 )
 
 func QueryUser(ctx context.Context, db *pgx.Conn, username string) (*model.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	var user model.User
@@ -34,16 +36,16 @@ func QueryUser(ctx context.Context, db *pgx.Conn, username string) (*model.User,
 }
 
 func UpdateUserTotp(ctx context.Context, db *pgx.Conn, username string, totpSecret *string) error {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	tx, txErr := db.Begin(ctx)
-	if txErr != nil {
+	tx, err := db.Begin(ctx)
+	if err != nil {
 		return ErrTransactionBeginFail
 	}
 	defer tx.Rollback(ctx)
 
-	_, err := db.Exec(ctx, `
+	_, err = db.Exec(ctx, `
         UPDATE users 
         SET totp = $2
         WHERE username = $1
@@ -60,7 +62,7 @@ func UpdateUserTotp(ctx context.Context, db *pgx.Conn, username string, totpSecr
 }
 
 func CreateUser(ctx context.Context, db *pgx.Conn, username string, password []byte) (*model.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	tx, err := db.Begin(ctx)
