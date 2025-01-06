@@ -15,11 +15,6 @@ type LoginInput struct {
 type Mutation struct {
 }
 
-type NewUserInput struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 type Query struct {
 }
 
@@ -28,4 +23,9 @@ type User struct {
 	Username string    `json:"username"`
 	Password string    `json:"password"`
 	Totp     *string   `json:"totp,omitempty"`
+}
+
+type UserCredentialsInputInput struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }

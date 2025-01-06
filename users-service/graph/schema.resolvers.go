@@ -6,56 +6,80 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"graphql/graph/model"
-
-	"github.com/pquerna/otp/totp"
+	"graphql/internal/auth"
+	"graphql/internal/users"
 )
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUserInput) (*model.User, error) {
-	key, _ := totp.Generate(totp.GenerateOpts{
-		Issuer:      "idk",
-		AccountName: input.Username,
-	})
-
-	secret := key.Secret()
-	fmt.Println(secret)
-
-	var user model.User
-	err := r.DB.QueryRow(ctx, `
-		INSERT INTO users (username, password_hash, totp_secret)
-		VALUES ($1, $2, $3)
-		RETURNING id, username, password_hash, totp_secret
-	`, input.Username, input.Password, secret).Scan(
-		&user.ID,
-		&user.Username,
-		&user.Password,
-		&user.Totp,
-	)
-
-	if err != nil {
-		return nil, fmt.Errorf("error creating user: %v", err)
+func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserCredentialsInputInput) (*model.User, error) {
+	if err := users.ValidateUserInput(input.Username, input.Password); err != nil {
+		return nil, err
 	}
 
-	return &user, nil
+	hashedPassword, err := auth.GeneratePasswordHash(input.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := users.CreateUser(ctx, r.DB, input.Username, hashedPassword)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 // Login is the resolver for the login field.
-func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (bool, error) {
-	panic(fmt.Errorf("not implemented: Login - login"))
+func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (string, error) {
+	user, err := users.QueryUser(ctx, r.DB, input.Username)
+	if err != nil {
+		return "", err
+	}
+
+	if err := auth.ValidatePassword(user.Password, input.Password); err != nil {
+		return "", err
+	}
+
+	if err := auth.ValidateTotp(user.Totp, input.Totp); err != nil {
+		return "", err
+	}
+
+	token, err := auth.GenerateJWT(user.Username)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
 
-// Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented: Users - users"))
+// ToggleTotp is the resolver for the toggleTotp field.
+func (r *mutationResolver) ToggleTotp(ctx context.Context, input model.UserCredentialsInputInput) (bool, error) {
+	user, err := users.QueryUser(ctx, r.DB, input.Username)
+	if err != nil {
+		return false, err
+	}
+
+	if *user.Totp == "" {
+		if err := auth.ValidatePassword(user.Password, input.Password); err != nil {
+			return false, err
+		}
+
+		totpSecret := auth.GenerateTotpKey(input.Username)
+
+		if users.UpdateUserTotp(ctx, r.DB, user.Username, &totpSecret); err != nil {
+			return false, err
+		}
+	} else {
+		if users.UpdateUserTotp(ctx, r.DB, user.Username, nil); err != nil {
+			return false, err
+		}
+	}
+
+	return true, nil
 }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
-
 type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }

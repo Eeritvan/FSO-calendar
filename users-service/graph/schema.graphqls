@@ -11,11 +11,7 @@ type User {
   totp: String
 }
 
-type Query {
-  users: [User!]!
-}
-
-input NewUserInput {
+input UserCredentialsInputInput {
   username: String!
   password: String!
 }
@@ -27,6 +23,7 @@ input LoginInput {
 }
 
 type Mutation {
-  createUser(input: NewUserInput!): User!
-  login(input: LoginInput!): Boolean!
+  createUser(input: UserCredentialsInputInput!): User!
+  login(input: LoginInput!): String!
+  toggleTotp(input: UserCredentialsInputInput!): Boolean!
 }

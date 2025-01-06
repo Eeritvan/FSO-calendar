@@ -47,9 +47,9 @@ func checkForUsersTable(conn *pgx.Conn, ctx context.Context) error {
 		_, err = conn.Exec(ctx, `
             CREATE TABLE users (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                username VARCHAR(50) UNIQUE NOT NULL,
-                password_hash VARCHAR(255) NOT NULL,
-				totp_secret VARCHAR(32)
+                username VARCHAR(50)  UNIQUE NOT NULL CHECK (LENGTH(username) >= 3),
+                password_hash VARCHAR(60) NOT NULL,
+				totp VARCHAR(50)
             );`)
 		if err != nil {
 			return err
