@@ -3,8 +3,8 @@ package users
 import (
 	"context"
 	"fmt"
-	"graphql/graph/model"
 	"time"
+	"users-service/graph/model"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"

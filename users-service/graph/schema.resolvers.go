@@ -6,13 +6,13 @@ package graph
 
 import (
 	"context"
-	"graphql/graph/model"
-	"graphql/internal/auth"
-	"graphql/internal/users"
+	model1 "users-service/graph/model"
+	"users-service/internal/auth"
+	"users-service/internal/users"
 )
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserCredentialsInputInput) (*model.User, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, input model1.UserCredentialsInputInput) (*model1.User, error) {
 	if err := users.ValidateUserInput(input.Username, input.Password); err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserCrede
 }
 
 // Login is the resolver for the login field.
-func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (string, error) {
+func (r *mutationResolver) Login(ctx context.Context, input model1.LoginInput) (string, error) {
 	user, err := users.QueryUser(ctx, r.DB, input.Username)
 	if err != nil {
 		return "", err
@@ -54,7 +54,7 @@ func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (s
 }
 
 // ToggleTotp is the resolver for the toggleTotp field.
-func (r *mutationResolver) ToggleTotp(ctx context.Context, input model.UserCredentialsInputInput) (bool, error) {
+func (r *mutationResolver) ToggleTotp(ctx context.Context, input model1.UserCredentialsInputInput) (bool, error) {
 	user, err := users.QueryUser(ctx, r.DB, input.Username)
 	if err != nil {
 		return false, err

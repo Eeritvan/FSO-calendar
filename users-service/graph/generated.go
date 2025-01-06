@@ -8,10 +8,10 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"graphql/graph/model"
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"users-service/graph/model"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -295,7 +295,7 @@ func (ec *executionContext) field_Mutation_createUser_argsInput(
 ) (model.UserCredentialsInputInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNUserCredentialsInputInput2graphqlᚋgraphᚋmodelᚐUserCredentialsInputInput(ctx, tmp)
+		return ec.unmarshalNUserCredentialsInputInput2usersᚑserviceᚋgraphᚋmodelᚐUserCredentialsInputInput(ctx, tmp)
 	}
 
 	var zeroVal model.UserCredentialsInputInput
@@ -318,7 +318,7 @@ func (ec *executionContext) field_Mutation_login_argsInput(
 ) (model.LoginInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNLoginInput2graphqlᚋgraphᚋmodelᚐLoginInput(ctx, tmp)
+		return ec.unmarshalNLoginInput2usersᚑserviceᚋgraphᚋmodelᚐLoginInput(ctx, tmp)
 	}
 
 	var zeroVal model.LoginInput
@@ -341,7 +341,7 @@ func (ec *executionContext) field_Mutation_toggleTotp_argsInput(
 ) (model.UserCredentialsInputInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNUserCredentialsInputInput2graphqlᚋgraphᚋmodelᚐUserCredentialsInputInput(ctx, tmp)
+		return ec.unmarshalNUserCredentialsInputInput2usersᚑserviceᚋgraphᚋmodelᚐUserCredentialsInputInput(ctx, tmp)
 	}
 
 	var zeroVal model.UserCredentialsInputInput
@@ -453,7 +453,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgraphqlᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖusersᚑserviceᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3263,7 +3263,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNLoginInput2graphqlᚋgraphᚋmodelᚐLoginInput(ctx context.Context, v any) (model.LoginInput, error) {
+func (ec *executionContext) unmarshalNLoginInput2usersᚑserviceᚋgraphᚋmodelᚐLoginInput(ctx context.Context, v any) (model.LoginInput, error) {
 	res, err := ec.unmarshalInputLoginInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -3298,11 +3298,11 @@ func (ec *executionContext) marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx
 	return res
 }
 
-func (ec *executionContext) marshalNUser2graphqlᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2usersᚑserviceᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
 	return ec._User(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUser2ᚖgraphqlᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖusersᚑserviceᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3312,7 +3312,7 @@ func (ec *executionContext) marshalNUser2ᚖgraphqlᚋgraphᚋmodelᚐUser(ctx c
 	return ec._User(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNUserCredentialsInputInput2graphqlᚋgraphᚋmodelᚐUserCredentialsInputInput(ctx context.Context, v any) (model.UserCredentialsInputInput, error) {
+func (ec *executionContext) unmarshalNUserCredentialsInputInput2usersᚑserviceᚋgraphᚋmodelᚐUserCredentialsInputInput(ctx context.Context, v any) (model.UserCredentialsInputInput, error) {
 	res, err := ec.unmarshalInputUserCredentialsInputInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }

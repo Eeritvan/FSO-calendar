@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"graphql/graph"
 	"log"
 	"net/http"
 	"os"
+	"users-service/graph"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
