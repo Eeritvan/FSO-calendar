@@ -65,7 +65,10 @@ func (r *mutationResolver) ToggleTotp(ctx context.Context, input model.UserCrede
 			return false, err
 		}
 
-		totpSecret := auth.GenerateTotpKey(input.Username)
+		totpSecret, err := auth.GenerateTotpKey(input.Username)
+		if err != nil {
+			return false, err
+		}
 
 		if users.UpdateUserTotp(ctx, r.DB, user.Username, &totpSecret); err != nil {
 			return false, err

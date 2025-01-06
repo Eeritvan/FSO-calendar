@@ -6,21 +6,30 @@ import (
 	"github.com/pquerna/otp/totp"
 )
 
-func GenerateTotpKey(username string) string {
-	key, _ := totp.Generate(totp.GenerateOpts{
+var (
+	ErrTotpRequired  = fmt.Errorf("totp required")
+	ErrTotpIncorrect = fmt.Errorf("incorrect totp")
+	ErrTotpGenFailed = fmt.Errorf("failed to generate totp key")
+)
+
+func GenerateTotpKey(username string) (string, error) {
+	key, err := totp.Generate(totp.GenerateOpts{
 		Issuer:      "void",
 		AccountName: username,
 	})
-	return key.Secret()
+	if err != nil {
+		return "", ErrTotpGenFailed
+	}
+	return key.Secret(), nil
 }
 
 func ValidateTotp(userTotp *string, inputTotp *string) error {
 	if *userTotp != "" {
 		if inputTotp == nil {
-			return fmt.Errorf("totp required")
+			return ErrTotpRequired
 		}
 		if !totp.Validate(*inputTotp, *userTotp) {
-			return fmt.Errorf("incorrect totp")
+			return ErrTotpIncorrect
 		}
 	}
 	return nil

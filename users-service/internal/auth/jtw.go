@@ -1,10 +1,15 @@
 package auth
 
 import (
+	"fmt"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+)
+
+var (
+	ErrJwtGenFailed = fmt.Errorf("failed to generate JWT")
 )
 
 func GenerateJWT(username string) (string, error) {
@@ -18,7 +23,7 @@ func GenerateJWT(username string) (string, error) {
 
 	returnToken, err := token.SignedString(secretKey)
 	if err != nil {
-		return "", err
+		return "", ErrJwtGenFailed
 	}
 	return returnToken, nil
 }

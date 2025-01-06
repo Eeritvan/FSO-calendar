@@ -10,6 +10,14 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+var (
+	ErrInformationFetch      = fmt.Errorf("failed to fetch user information")
+	ErrTransactionBeginFail  = fmt.Errorf("failed to begin transaction")
+	ErrTransactionCommitFail = fmt.Errorf("failed to commit transaction")
+	ErrTotpUpdateFail        = fmt.Errorf("failed to update TOTP")
+	ErrUserCreationFailed    = fmt.Errorf("error creating user")
+)
+
 func QueryUser(ctx context.Context, db *pgx.Conn, username string) (*model.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -20,7 +28,7 @@ func QueryUser(ctx context.Context, db *pgx.Conn, username string) (*model.User,
 		FROM users
 		WHERE username = $1
 	`, username).Scan(&user.Username, &user.Password, &user.Totp); err != nil {
-		return nil, fmt.Errorf("failed to fetch user information %v", err)
+		return nil, ErrInformationFetch
 	}
 	return &user, nil
 }
@@ -31,7 +39,7 @@ func UpdateUserTotp(ctx context.Context, db *pgx.Conn, username string, totpSecr
 
 	tx, txErr := db.Begin(ctx)
 	if txErr != nil {
-		return fmt.Errorf("failed to begin transaction: %v", txErr)
+		return ErrTransactionBeginFail
 	}
 	defer tx.Rollback(ctx)
 
@@ -41,11 +49,11 @@ func UpdateUserTotp(ctx context.Context, db *pgx.Conn, username string, totpSecr
         WHERE username = $1
 	`, username, totpSecret)
 	if err != nil {
-		return fmt.Errorf("failed to update TOTP: %v", err)
+		return ErrTotpUpdateFail
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("failed to commit transaction: %v", err)
+		return ErrTransactionCommitFail
 	}
 
 	return nil
@@ -57,7 +65,7 @@ func CreateUser(ctx context.Context, db *pgx.Conn, username string, password []b
 
 	tx, err := db.Begin(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to begin transaction: %v", err)
+		return nil, ErrTransactionBeginFail
 	}
 	defer tx.Rollback(ctx)
 
@@ -79,12 +87,12 @@ func CreateUser(ctx context.Context, db *pgx.Conn, username string, password []b
 		case "23514":
 			return nil, ErrInvalidUsername
 		default:
-			return nil, fmt.Errorf("error creating user: %v", err)
+			return nil, ErrUserCreationFailed
 		}
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("failed to commit transaction: %v", err)
+		return nil, ErrTransactionCommitFail
 	}
 
 	return &user, nil
