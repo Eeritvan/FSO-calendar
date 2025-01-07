@@ -70,11 +70,11 @@ func (r *mutationResolver) ToggleTotp(ctx context.Context, input model1.UserCred
 			return false, err
 		}
 
-		if users.UpdateUserTotp(ctx, r.DB, user.Username, &totpSecret); err != nil {
+		if users.UpdateUserTotp(ctx, r.DB, user.Username, totpSecret); err != nil {
 			return false, err
 		}
 	} else {
-		if users.UpdateUserTotp(ctx, r.DB, user.Username, nil); err != nil {
+		if users.UpdateUserTotp(ctx, r.DB, user.Username, ""); err != nil {
 			return false, err
 		}
 	}

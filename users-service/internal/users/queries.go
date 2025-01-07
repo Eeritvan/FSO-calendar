@@ -21,7 +21,13 @@ var (
 	ErrUserExists            = fmt.Errorf("username already exists")
 )
 
-func QueryUser(ctx context.Context, db *pgx.Conn, username string) (*model.User, error) {
+type DBConnection interface {
+	QueryRow(ctx context.Context, query string, args ...interface{}) pgx.Row
+	Begin(ctx context.Context) (pgx.Tx, error)
+	Exec(ctx context.Context, query string, args ...interface{}) (pgconn.CommandTag, error)
+}
+
+func QueryUser(ctx context.Context, db DBConnection, username string) (*model.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
@@ -36,7 +42,7 @@ func QueryUser(ctx context.Context, db *pgx.Conn, username string) (*model.User,
 	return &user, nil
 }
 
-func UpdateUserTotp(ctx context.Context, db *pgx.Conn, username string, totpSecret *string) error {
+func UpdateUserTotp(ctx context.Context, db DBConnection, username string, totpSecret string) error {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
@@ -62,7 +68,7 @@ func UpdateUserTotp(ctx context.Context, db *pgx.Conn, username string, totpSecr
 	return nil
 }
 
-func CreateUser(ctx context.Context, db *pgx.Conn, username string, password []byte) (*model.User, error) {
+func CreateUser(ctx context.Context, db DBConnection, username string, password []byte) (*model.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
@@ -83,15 +89,16 @@ func CreateUser(ctx context.Context, db *pgx.Conn, username string, password []b
 		&user.Password,
 		&user.Totp,
 	); err != nil {
-		pgErr := err.(*pgconn.PgError)
-		switch pgErr.Code {
-		case "23505":
-			return nil, ErrUserExists
-		case "23514":
-			return nil, ErrInvalidUsername
-		default:
-			return nil, ErrUserCreationFailed
-		}
+		return nil, err
+		// pgErr := err.(*pgconn.PgError)
+		// switch pgErr.Code {
+		// case "23505":
+		// 	return nil, err
+		// case "23514":
+		// 	return nil, err
+		// default:
+		// 	return nil, err
+		// }
 	}
 
 	if err := tx.Commit(ctx); err != nil {
