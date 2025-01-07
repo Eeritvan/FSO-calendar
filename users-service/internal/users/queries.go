@@ -18,6 +18,7 @@ var (
 	ErrTransactionCommitFail = fmt.Errorf("failed to commit transaction")
 	ErrTotpUpdateFail        = fmt.Errorf("failed to update TOTP")
 	ErrUserCreationFailed    = fmt.Errorf("error creating user")
+	ErrUserExists            = fmt.Errorf("username already exists")
 )
 
 func QueryUser(ctx context.Context, db *pgx.Conn, username string) (*model.User, error) {

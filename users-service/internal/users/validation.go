@@ -8,7 +8,6 @@ import (
 var (
 	ErrInvalidPassword = fmt.Errorf("password must be at least 8 characters long")
 	ErrInvalidUsername = fmt.Errorf("username must be at least 3 characters long")
-	ErrUserExists      = fmt.Errorf("username already exists")
 )
 
 func ValidateUsername(username string) error {
