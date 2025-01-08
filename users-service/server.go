@@ -13,6 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -90,7 +91,14 @@ func main() {
 		Cache: lru.New[string](100),
 	})
 
-	http.Handle("/query", srv)
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+	}).Handler(srv)
+
+	http.Handle("/query", corsHandler)
 	setupPlayground(port)
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))
