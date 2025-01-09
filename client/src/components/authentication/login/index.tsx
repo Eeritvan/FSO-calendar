@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { object, pipe, string, minLength, number } from 'valibot'
 import { useMutation } from '@tanstack/react-query'
-import { loginMutation } from '../../../graphql/mutations'
+import { loginQuery } from '../../../graphql/mutations'
 
 interface LoginFormData {
   username: string
@@ -34,7 +34,7 @@ const Login = () => {
 
   const loginMutate = useMutation({
     mutationFn: async (data: LoginFormData) => {
-      const result = await loginMutation
+      const result = await loginQuery
         .send({ username: data.username, password: data.password })
       window.localStorage.setItem('user-token', JSON.stringify(result))
       return result
