@@ -12,6 +12,11 @@ type LoginInput struct {
 	Totp     *string `json:"totp,omitempty"`
 }
 
+type LoginResponse struct {
+	Username string `json:"username"`
+	Token    string `json:"token"`
+}
+
 type Mutation struct {
 }
 

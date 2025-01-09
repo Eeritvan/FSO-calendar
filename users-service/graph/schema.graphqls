@@ -11,6 +11,11 @@ type User {
   totp: String
 }
 
+type LoginResponse {
+  username: String!
+  token: String!
+}
+
 input UserCredentialsInputInput {
   username: String!
   password: String!
@@ -22,8 +27,11 @@ input LoginInput {
   totp: String
 }
 
+type Query {
+  login(input: LoginInput!): LoginResponse!
+}
+
 type Mutation {
   createUser(input: UserCredentialsInputInput!): User!
-  login(input: LoginInput!): String!
   toggleTotp(input: UserCredentialsInputInput!): Boolean!
 }
