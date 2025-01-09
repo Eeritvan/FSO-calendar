@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { useMutation } from '@tanstack/react-query'
-import { loginQuery } from '../../../graphql/mutations'
-import { Redirect } from 'wouter'
+import { loginQuery } from '@/graphql/mutations'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
 import {
   object,
   pipe,
@@ -36,6 +36,8 @@ const schema = object({
 })
 
 const Login = () => {
+  const { setItem } = useLocalStorage('user-info')
+
   const {
     register,
     handleSubmit,
@@ -55,8 +57,7 @@ const Login = () => {
       if (result.errors) {
         throw result.errors[0].message
       }
-
-      window.localStorage.setItem('user-token', JSON.stringify(result))
+      setItem(result)
       return result
     },
     // eslint-disable-next-line no-console
