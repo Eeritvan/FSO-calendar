@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { useMutation } from '@tanstack/react-query'
@@ -37,6 +38,7 @@ const schema = object({
 
 const Login = () => {
   const { setItem } = useLocalStorage('user-info')
+  const [error, setError] = useState<string | null>(null)
 
   const {
     register,
@@ -54,17 +56,17 @@ const Login = () => {
           password: data.password,
           totp: data.totp ? data.totp : null
         })
-      if (result.errors) {
-        throw result.errors[0].message
-      }
+      if (result.errors) throw result.errors[0].message
       setItem(result)
       return result
     },
-    // eslint-disable-next-line no-console
-    onError: (error) => console.log(error)
+    onError: (e) => setError(e as unknown as string) // todo: fix this
   })
 
-  const onSubmit = async (data: LoginFormData) => loginMutate.mutate(data)
+  const onSubmit = async (data: LoginFormData) => {
+    setError(null)
+    loginMutate.mutate(data)
+  }
 
   return (
     <>
@@ -73,10 +75,12 @@ const Login = () => {
         <input {...register('username')}
           placeholder="username"
         /> <br />
+        {errors.username && <p>{errors.username.message}</p>}
         <input {...register('password')}
           type="password"
           placeholder="password"
         /> <br />
+        {errors.password && <p>{errors.password.message}</p>}
         <input {...register('totp', {
           setValueAs: (value: string) => {
             return value === '' ? undefined : Number(value)
@@ -87,6 +91,7 @@ const Login = () => {
         /> <br />
         {errors.totp && <p>{errors.totp.message}</p>}
         <input type='submit' />
+        {error && <p>{error}</p>}
       </form>
     </>
   )
