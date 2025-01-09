@@ -89,16 +89,15 @@ func CreateUser(ctx context.Context, db DBConnection, username string, password 
 		&user.Password,
 		&user.Totp,
 	); err != nil {
-		return nil, err
-		// pgErr := err.(*pgconn.PgError)
-		// switch pgErr.Code {
-		// case "23505":
-		// 	return nil, err
-		// case "23514":
-		// 	return nil, err
-		// default:
-		// 	return nil, err
-		// }
+		pgErr := err.(*pgconn.PgError)
+		switch pgErr.Code {
+		case "23505":
+			return nil, ErrUserExists
+		case "23514":
+			return nil, ErrInvalidUsername
+		default:
+			return nil, ErrUserCreationFailed
+		}
 	}
 
 	if err := tx.Commit(ctx); err != nil {
