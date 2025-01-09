@@ -27,11 +27,8 @@ input LoginInput {
   totp: String
 }
 
-type Query {
-  login(input: LoginInput!): LoginResponse!
-}
-
 type Mutation {
   createUser(input: UserCredentialsInputInput!): User!
+  login(input: LoginInput!): LoginResponse!
   toggleTotp(input: UserCredentialsInputInput!): Boolean!
 }

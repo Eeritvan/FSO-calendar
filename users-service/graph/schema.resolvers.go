@@ -30,6 +30,32 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserCrede
 	return user, nil
 }
 
+// Login is the resolver for the login field.
+func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (*model.LoginResponse, error) {
+	user, err := users.QueryUser(ctx, r.DB, input.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := auth.ValidatePassword(user.Password, input.Password); err != nil {
+		return nil, err
+	}
+
+	if err := auth.ValidateTotp(user.Totp, input.Totp); err != nil {
+		return nil, err
+	}
+
+	token, err := auth.GenerateJWT(user.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.LoginResponse{
+		Username: user.Username,
+		Token:    token,
+	}, nil
+}
+
 // ToggleTotp is the resolver for the toggleTotp field.
 func (r *mutationResolver) ToggleTotp(ctx context.Context, input model.UserCredentialsInputInput) (bool, error) {
 	user, err := users.QueryUser(ctx, r.DB, input.Username)
@@ -59,37 +85,7 @@ func (r *mutationResolver) ToggleTotp(ctx context.Context, input model.UserCrede
 	return true, nil
 }
 
-// Login is the resolver for the login field.
-func (r *queryResolver) Login(ctx context.Context, input model.LoginInput) (*model.LoginResponse, error) {
-	user, err := users.QueryUser(ctx, r.DB, input.Username)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := auth.ValidatePassword(user.Password, input.Password); err != nil {
-		return nil, err
-	}
-
-	if err := auth.ValidateTotp(user.Totp, input.Totp); err != nil {
-		return nil, err
-	}
-
-	token, err := auth.GenerateJWT(user.Username)
-	if err != nil {
-		return nil, err
-	}
-
-	return &model.LoginResponse{
-		Username: user.Username,
-		Token:    token,
-	}, nil
-}
-
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
-
 type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }
