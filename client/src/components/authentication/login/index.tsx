@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { loginQuery } from '@/graphql/mutations'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { useLocation } from 'wouter'
 import {
   object,
   pipe,
@@ -37,8 +38,10 @@ const schema = object({
 })
 
 const Login = () => {
+  const queryClient = useQueryClient()
   const { setItem } = useLocalStorage('user-info')
   const [error, setError] = useState<string | null>(null)
+  const [, navigate] = useLocation()
 
   const {
     register,
@@ -60,7 +63,11 @@ const Login = () => {
       setItem(result)
       return result
     },
-    onError: (e) => setError(e as unknown as string) // todo: fix this
+    onError: (e) => setError(e as unknown as string), // todo: fix this
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['token'] })
+      navigate('/')
+    }
   })
 
   const onSubmit = async (data: LoginFormData) => {
