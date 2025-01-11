@@ -12,7 +12,7 @@ import (
 )
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserCredentialsInputInput) (*model.User, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserCredentialsInputInput) (*model.LoginResponse, error) {
 	if err := users.ValidateUserInput(input.Username, input.Password); err != nil {
 		return nil, err
 	}
@@ -27,7 +27,15 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserCrede
 		return nil, err
 	}
 
-	return user, nil
+	token, err := auth.GenerateJWT(user.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.LoginResponse{
+		Username: user.Username,
+		Token:    token,
+	}, nil
 }
 
 // Login is the resolver for the login field.

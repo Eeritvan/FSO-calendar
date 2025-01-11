@@ -28,7 +28,7 @@ input LoginInput {
 }
 
 type Mutation {
-  createUser(input: UserCredentialsInputInput!): User!
+  createUser(input: UserCredentialsInputInput!): LoginResponse!
   login(input: LoginInput!): LoginResponse!
   toggleTotp(input: UserCredentialsInputInput!): Boolean!
 }
