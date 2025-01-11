@@ -1,8 +1,8 @@
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { registerMutation } from '@/graphql/mutations'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
 import FormField from '../shared/formField'
 import {
   object,
@@ -38,7 +38,7 @@ const registerSchema = pipe(
   )
 )
 
-type RegisterFormData = InferInput<typeof registerSchema>
+type FormData = InferInput<typeof registerSchema>
 
 const Register = () => {
   const queryClient = useQueryClient()
@@ -49,12 +49,12 @@ const Register = () => {
     handleSubmit,
     setError,
     formState: { errors, isSubmitting }
-  } = useForm<RegisterFormData>({
+  } = useForm<FormData>({
     resolver: valibotResolver(registerSchema)
   })
 
-  const loginMutate = useMutation({
-    mutationFn: async (data: RegisterFormData) => {
+  const registerMutate = useMutation({
+    mutationFn: async (data: FormData) => {
       const result = await registerMutation
         .send({
           username: data.username,
@@ -68,13 +68,16 @@ const Register = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['token'] })
   })
 
-  const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
-    await new Promise(() => loginMutate.mutate(data))
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    try {
+      await registerMutate.mutateAsync(data)
+    } catch (error) {
+      setError('root', { message: error as unknown as string })
+    }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      Register
       <FormField
         type = 'text'
         label = 'Username'

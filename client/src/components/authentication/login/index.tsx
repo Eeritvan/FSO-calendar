@@ -31,7 +31,7 @@ const loginSchema = object({
   ))
 })
 
-type LoginFormData = InferInput<typeof loginSchema>
+type FormData = InferInput<typeof loginSchema>
 
 const Login = () => {
   const queryClient = useQueryClient()
@@ -42,12 +42,12 @@ const Login = () => {
     handleSubmit,
     setError,
     formState: { errors, isSubmitting }
-  } = useForm<LoginFormData>({
+  } = useForm<FormData>({
     resolver: valibotResolver(loginSchema)
   })
 
   const loginMutate = useMutation({
-    mutationFn: async (data: LoginFormData) => {
+    mutationFn: async (data: FormData) => {
       const result = await loginMutation
         .send({
           username: data.username,
@@ -62,7 +62,7 @@ const Login = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['token'] })
   })
 
-  const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       await loginMutate.mutateAsync(data)
     } catch (error) {
@@ -72,7 +72,6 @@ const Login = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      Login
       <FormField
         type = 'text'
         label = 'Username'
@@ -96,7 +95,9 @@ const Login = () => {
         register = {register}
         name = 'totp'
         placeholder = '6-digit TOTP'
-        setValueAs={(value: string) => value === '' ? undefined : Number(value)}
+        setValueAs={
+          (value: string) => value === '' ? undefined : Number(value)
+        }
       />
       <button disabled={isSubmitting} type='submit'>
         {isSubmitting ? 'loading' : 'submit'}
