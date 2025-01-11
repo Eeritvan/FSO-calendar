@@ -1,6 +1,7 @@
 import SidePanel from './components/sidePanel'
 import MainView from './components/mainView'
 import Login from './components/authentication/login'
+import Register from './components/authentication/register'
 import Split from 'react-split'
 import usePanelSizeSlice from './store/panelSizeStore'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
@@ -26,7 +27,7 @@ const App = () => {
   return (
     <Switch>
       <Route path="/login">
-        {token ? <Redirect to="/" /> : <Login />}
+        {token ? <Redirect to="/" /> : <Register />}
       </Route>
       <Route path="/">
         {!token ? <Redirect to="/login" /> : (

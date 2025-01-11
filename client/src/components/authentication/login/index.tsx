@@ -1,7 +1,7 @@
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { loginQuery } from '@/graphql/mutations'
+import { loginMutation } from '@/graphql/mutations'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import {
   object,
@@ -15,7 +15,7 @@ import {
   InferInput
 } from 'valibot'
 
-const schema = object({
+const loginSchema = object({
   username: pipe(
     string('username is required'),
     minLength(3, 'Needs to be at least 3 characters')
@@ -30,7 +30,7 @@ const schema = object({
   ))
 })
 
-type LoginFormData = InferInput<typeof schema>
+type LoginFormData = InferInput<typeof loginSchema>
 
 const Login = () => {
   const queryClient = useQueryClient()
@@ -42,12 +42,12 @@ const Login = () => {
     setError,
     formState: { errors, isSubmitting }
   } = useForm<LoginFormData>({
-    resolver: valibotResolver(schema)
+    resolver: valibotResolver(loginSchema)
   })
 
   const loginMutate = useMutation({
     mutationFn: async (data: LoginFormData) => {
-      const result = await loginQuery
+      const result = await loginMutation
         .send({
           username: data.username,
           password: data.password,
