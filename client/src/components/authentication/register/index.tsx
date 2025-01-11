@@ -64,7 +64,7 @@ const Register = () => {
       setItem(result)
       return result
     },
-    onError: (e) => setError('root', { message: e as unknown as string }),
+    onError: (e) => { throw e },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['token'] })
   })
 

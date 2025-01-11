@@ -58,7 +58,7 @@ const Login = () => {
       setItem(result)
       return result
     },
-    onError: (e) => {throw e},
+    onError: (e) => { throw e },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['token'] })
   })
 
