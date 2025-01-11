@@ -1,10 +1,8 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { loginQuery } from '@/graphql/mutations'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
-import { useLocation } from 'wouter'
 import {
   object,
   pipe,
@@ -13,14 +11,9 @@ import {
   number,
   optional,
   maxValue,
-  minValue
+  minValue,
+  InferInput
 } from 'valibot'
-
-interface LoginFormData {
-  username: string
-  password: string
-  totp?: number
-}
 
 const schema = object({
   username: pipe(
@@ -37,16 +30,17 @@ const schema = object({
   ))
 })
 
+type LoginFormData = InferInput<typeof schema>
+
 const Login = () => {
   const queryClient = useQueryClient()
   const { setItem } = useLocalStorage('user-info')
-  const [error, setError] = useState<string | null>(null)
-  const [, navigate] = useLocation()
 
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    setError,
+    formState: { errors, isSubmitting }
   } = useForm<LoginFormData>({
     resolver: valibotResolver(schema)
   })
@@ -63,44 +57,38 @@ const Login = () => {
       setItem(result)
       return result
     },
-    onError: (e) => setError(e as unknown as string), // todo: fix this
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['token'] })
-      navigate('/')
-    }
+    onError: (e) => setError('root', { message: e as unknown as string }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['token'] })
   })
 
-  const onSubmit = async (data: LoginFormData) => {
-    setError(null)
-    loginMutate.mutate(data)
+  const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
+    await new Promise(() => loginMutate.mutate(data))
   }
 
   return (
-    <>
-      Login
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input {...register('username')}
-          placeholder="username"
-        /> <br />
-        {errors.username && <p>{errors.username.message}</p>}
-        <input {...register('password')}
-          type="password"
-          placeholder="password"
-        /> <br />
-        {errors.password && <p>{errors.password.message}</p>}
-        <input {...register('totp', {
-          setValueAs: (value: string) => {
-            return value === '' ? undefined : Number(value)
-          }
-        })}
-        type='number'
-        placeholder="6-digit TOTP"
-        /> <br />
-        {errors.totp && <p>{errors.totp.message}</p>}
-        <input type='submit' />
-        {error && <p>{error}</p>}
-      </form>
-    </>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      Login <br />
+      <input {...register('username')} placeholder='username' /> <br />
+      {errors.username && <p>{errors.username.message}</p>}
+      <input {...register('password')}
+        type='password'
+        placeholder='password'
+      /> <br />
+      {errors.password && <p>{errors.password.message}</p>}
+      <input {...register('totp', {
+        setValueAs: (value: string) => {
+          return value === '' ? undefined : Number(value)
+        }
+      })}
+      type='number'
+      placeholder='6-digit TOTP'
+      /> <br />
+      {errors.totp && <p>{errors.totp.message}</p>}
+      <button disabled={isSubmitting} type='submit'>
+        {isSubmitting ? 'loading' : 'submit'}
+      </button>
+      {errors.root && <p>{errors.root.message}</p>}
+    </form>
   )
 }
 
