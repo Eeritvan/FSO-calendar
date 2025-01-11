@@ -3,6 +3,7 @@ import { valibotResolver } from '@hookform/resolvers/valibot'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { registerMutation } from '@/graphql/mutations'
+import FormField from '../shared/formField'
 import {
   object,
   pipe,
@@ -47,7 +48,7 @@ const Register = () => {
     register,
     handleSubmit,
     setError,
-    formState: { errors, isLoading }
+    formState: { errors, isSubmitting }
   } = useForm<RegisterFormData>({
     resolver: valibotResolver(registerSchema)
   })
@@ -73,23 +74,33 @@ const Register = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      Register <br />
-      <input {...register('username')}
-        placeholder='username'
-      /> <br />
-      {errors.username && <p>{errors.username.message}</p>}
-      <input {...register('password')}
-        type='password'
-        placeholder='username'
-      /> <br />
-      {errors.password && <p>{errors.password.message}</p>}
-      <input {...register('passwordConfirm')}
-        type='password'
-        placeholder='password confirmation'
-      /> <br />
-      {errors.passwordConfirm && <p>{errors.passwordConfirm.message}</p>}
-      <button type='submit'>
-        {isLoading ? 'loading' : 'submit'}
+      Register
+      <FormField
+        type = 'text'
+        label = 'Username'
+        error = {errors.username?.message}
+        register = {register}
+        name = 'username'
+        placeholder = 'username'
+      />
+      <FormField
+        type = 'password'
+        label = 'Password'
+        error = {errors.password?.message}
+        register = {register}
+        name = 'password'
+        placeholder = 'password'
+      />
+      <FormField
+        type = 'password'
+        label = 'Password confirmation'
+        error = {errors.passwordConfirm?.message}
+        register = {register}
+        name = 'passwordConfirm'
+        placeholder = 'Password confirmation'
+      />
+      <button disabled={isSubmitting} type='submit'>
+        {isSubmitting ? 'loading' : 'submit'}
       </button>
       {errors.root && <p>{errors.root.message}</p>}
     </form>
