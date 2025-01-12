@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { registerMutation } from '@/graphql/mutations'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import FormField from '../shared/formField'
+import Button from '../shared/button'
 import {
   object,
   pipe,
@@ -80,7 +81,6 @@ const Register = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormField
         type = 'text'
-        label = 'Username'
         error = {errors.username?.message}
         register = {register}
         name = 'username'
@@ -88,7 +88,6 @@ const Register = () => {
       />
       <FormField
         type = 'password'
-        label = 'Password'
         error = {errors.password?.message}
         register = {register}
         name = 'password'
@@ -96,16 +95,15 @@ const Register = () => {
       />
       <FormField
         type = 'password'
-        label = 'Password confirmation'
         error = {errors.passwordConfirm?.message}
         register = {register}
         name = 'passwordConfirm'
-        placeholder = 'Password confirmation'
+        placeholder = 'confirm password'
       />
-      <button disabled={isSubmitting} type='submit'>
-        {isSubmitting ? 'loading' : 'submit'}
-      </button>
-      {errors.root && <p>{errors.root.message}</p>}
+      <Button
+        isSubmitting = {isSubmitting}
+        error = {errors.root?.message}
+      />
     </form>
   )
 }

@@ -1,6 +1,5 @@
 interface FormFieldProps {
   type: string
-  label: string
   error?: string
   name: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -11,7 +10,6 @@ interface FormFieldProps {
 
 const FormField = ({
   type,
-  label,
   error,
   register,
   name,
@@ -19,15 +17,21 @@ const FormField = ({
   setValueAs
 }: FormFieldProps) => {
   return (
-    <div>
-      <label htmlFor={name}>{label}</label>
-      <input
-        {...register(name, { setValueAs })}
-        type={type}
-        placeholder={placeholder}
-      />
-      {error && <p>{error}</p>}
-    </div>
+    <>
+      <div className='flex relative items-center justify-center my-4'>
+        <input
+          {...register(name, { setValueAs })}
+          type={type}
+          placeholder={placeholder}
+          className={`w-[400px] h-12 rounded-xl p-4 border-2 ${
+            error ? 'border-red-500' : 'border-neutral-200'
+          }`}
+        />
+      </div>
+      <div>
+        {error && <p>{error}</p>}
+      </div>
+    </>
   )
 }
 
