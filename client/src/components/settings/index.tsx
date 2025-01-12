@@ -1,7 +1,5 @@
 import { useForm } from 'react-hook-form'
 import useSettingsSlice from '../../store/settingsStore'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { object, pipe, string, minLength, endsWith } from 'valibot'
 
@@ -23,9 +21,9 @@ interface FormData {
 
 const Settings = () => {
   const {
-    darkMode,
+    // darkMode,
     text,
-    toggleDarkMode,
+    // toggleDarkMode,
     writeSomething,
     resetSettings
   } = useSettingsSlice()
@@ -48,14 +46,6 @@ const Settings = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Switch
-        id='dark-mode'
-        checked={darkMode}
-        onCheckedChange={toggleDarkMode}
-      />
-      <Label htmlFor='dark-mode'>Toggle darkmode</Label>
-      <br />
-
       <input {...register('text')} />
       <input {...register('password')} />
       <input type='submit' />
