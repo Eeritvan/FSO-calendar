@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { motion } from 'motion/react'
 import usePanelSizeSlice from '../../store/panelSizeStore'
 
 const AddNew = () => {
@@ -15,12 +14,7 @@ const AddNew = () => {
 
   return (
     <div>
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        testing
-      </motion.button>
+      testing
     </div>
   )
 }
