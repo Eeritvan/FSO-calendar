@@ -5,6 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import pluginQuery from '@tanstack/eslint-plugin-query'
 import reactCompiler from 'eslint-plugin-react-compiler'
+import reactPlugin from 'eslint-plugin-react'
 
 export default tseslint.config(
   tseslint.configs.strict,
@@ -13,15 +14,31 @@ export default tseslint.config(
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
+    ...reactPlugin.configs.flat.recommended,
+    ...reactPlugin.configs.flat['jsx-runtime'],
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+      ecmaVersion: 'latest',
+      globals: {
+        ...globals.serviceworker,
+        ...globals.browser,
+      },
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
     },
     plugins: {
+      'react': reactPlugin,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       '@tanstack/query': pluginQuery,
       'react-compiler': reactCompiler,
+    },
+    settings: {
+      react: {
+        version: 'detect'
+      }
     },
     rules: {
       'react-compiler/react-compiler': 'error',
@@ -49,7 +66,14 @@ export default tseslint.config(
       'no-else-return': ['error'],
       'comma-spacing': ['error', { 'before': false, 'after': true }],
       'no-var': ['error'],
-      'prefer-const': ['error']
+      'prefer-const': ['error'],
+      'react/jsx-closing-bracket-location': ['error'],
+      'react/prefer-stateless-function': ['error'],
+      'react/no-multi-comp': ['error'],
+      'react/sort-comp': ['error'],
+      'react/jsx-no-bind': ['error'],
+      'react/self-closing-comp': ['error'],
+      'react/jsx-wrap-multilines': ['error']
     }
   }
 )

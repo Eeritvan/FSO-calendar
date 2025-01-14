@@ -17,7 +17,7 @@ const Selector = ({ children }: SelectorProps) => {
   const styledSChildren = Children.map(children, child => {
     if (!isValidElement(child)) {
       return child
-    } 
+    }
     const isActive = matches(child.props.to)
 
     const className = `flex relative items-center justify-center w-full ${
@@ -28,7 +28,8 @@ const Selector = ({ children }: SelectorProps) => {
   return (
     <div className='flex flex-col w-[400px]'>
       <div className='relative rounded-xl grid bg-neutral-200 h-12 p-1'>
-        {activeIndex !== -1 && <div
+        {activeIndex !== -1 &&
+        <div
           className={
             `relative rounded-xl bg-white
             transition-all duration-200 row-start-1 col-start-1`

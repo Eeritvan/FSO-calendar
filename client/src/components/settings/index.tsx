@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import useSettingsSlice from '../../store/settingsStore'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { object, pipe, string, minLength, endsWith } from 'valibot'
+import { useCallback } from 'react'
 
 const schema = object({
   text: pipe(
@@ -39,10 +40,10 @@ const Settings = () => {
 
   const onSubmit = (data: FormData) => writeSomething(data.text)
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     resetSettings()
     reset()
-  }
+  }, [reset, resetSettings])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

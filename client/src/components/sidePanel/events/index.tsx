@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Event from './event'
 import { closestCorners,
   DndContext,
@@ -41,7 +41,7 @@ const Events = () => {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
 
     if (over && active.id !== over.id) {
@@ -51,14 +51,15 @@ const Events = () => {
         return arrayMove(events, oldIndex, newIndex)
       })
     }
-  }
+  }, [])
 
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCorners}
       onDragEnd={handleDragEnd}
-      modifiers={[restrictToVerticalAxis, restrictToParentElement]}>
+      modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+    >
       <div className='h-80 overflow-y-auto bg-orange-300'>
         <SortableContext items={events} strategy={verticalListSortingStrategy}>
           {events.map((item) =>
