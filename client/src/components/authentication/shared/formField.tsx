@@ -18,7 +18,7 @@ const FormField = ({
 }: FormFieldProps) => {
   return (
     <>
-      <div className='flex relative items-center justify-center my-4'>
+      <div className='flex relative my-4'>
         <input
           {...register(name, { setValueAs })}
           type={type}

@@ -1,9 +1,9 @@
 import { Link  } from 'wouter'
 
-const Day = () => {
+const Year = () => {
   return (
     <div>
-      day
+      year
       <Link to='#add-new'>
         <button>add new</button>
       </Link>
@@ -11,4 +11,4 @@ const Day = () => {
   )
 }
 
-export default Day
+export default Year

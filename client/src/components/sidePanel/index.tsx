@@ -1,14 +1,10 @@
-// import { lazy, Suspense } from 'react'
-// import { Router, Route, Switch, Link } from 'wouter'
-// import { useHashLocation } from 'wouter/use-hash-location'
 import Events from './events'
-
-// const Settings = lazy(() => import('../settings'))
-// const AddNew = lazy(() => import('../addNew'))
+import CurrentTime from './currentTime'
 
 const SidePanel = () => {
   return (
-    <div className='bg-green-400 rounded-xl'>
+    <div className='flex flex-col bg-green-400 rounded-xl m-1'>
+      <CurrentTime />
       <Events />
     </div>
   )

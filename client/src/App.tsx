@@ -17,17 +17,18 @@ const App = () => {
 
   return (
     <Switch>
-      <Route path="/login">
-        {token ? <Redirect to="/" /> : <AuthTabs />}
+      <Route path='/login'>
+        {token ? <Redirect to='/' /> : <AuthTabs />}
       </Route>
-      <Route path="/register">
-        {token ? <Redirect to="/" /> : <AuthTabs />}
+      <Route path='/register'>
+        {token ? <Redirect to='/' /> : <AuthTabs />}
       </Route>
-      <Route path="/">
-        {!token ? <Redirect to="/login" /> : (
+      <Route>
+        {!token ? <Redirect to='/login' /> : (
           <Split
-            className="flex h-screen w-screen"
+            className='flex h-screen'
             gutterSize={5}
+            sizes={[30, 100 - 30]}
             minSize={[50, 300]}
             maxSize={[400, Infinity]}
             snapOffset={0}
