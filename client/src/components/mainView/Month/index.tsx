@@ -1,44 +1,101 @@
+/* eslint-disable react/no-multi-comp */
+/* eslint-disable max-len */
 import { useParams  } from 'wouter'
 import dayjs from 'dayjs'
-
-interface Dates {
-  year: number
-  month: number
-  day: number
-}
+import { FixedSizeGrid } from 'react-window'
+import AutoSizer from 'react-virtualized-auto-sizer'
+import { useState, useCallback } from 'react'
 
 interface MonthParams {
   year: string;
   month: string;
 }
 
-const Month = () => {
-  // eslint-disable-next-line react-compiler/react-compiler
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const params = useParams<MonthParams>()
-  const dates: Dates[] = []
-  const year = Number(params.year)
-  const month = Number(params.month)
+interface DateCellProps {
+  columnIndex: number
+  rowIndex: number
+  style: React.CSSProperties
+}
 
-  for (let i = 1; i <= dayjs(`${year}-${month}-01`).daysInMonth(); i++) {
-    dates.push({
-      year: year,
-      month: month,
-      day: i
-    })
+const getMonth = (month: number): string => {
+  return dayjs().month(month - 1).format('MMMM')
+}
+
+const getDateNames = (): string[] => {
+  return Array.from({ length: 7 }, (_, i) =>
+    dayjs().day(i).format('ddd')
+  )
+}
+
+const DateCell = ({ columnIndex, rowIndex, style }: DateCellProps) => {
+  const calculateDate = () => {
+    const totalDays = rowIndex * 7 + columnIndex
+    const baseDate = dayjs().startOf('month')
+    const date = baseDate.add(totalDays - baseDate.day(), 'day')
+    return date
   }
 
+  const date = calculateDate()
+  const isToday = date.isSame(dayjs(), 'day')
+
   return (
-    <>
-      {year} {month}
-      <div className='grid grid-cols-7 gap-2'>
-        {dates.map((x) => (
-          <div key={x.day} className='bg-green-600 h-[8rem] hover:bg-red-400'>
-            {x.day}a
+    <div
+      style={style}
+      className={`border-b border-r p-2 ${ isToday ? 'bg-blue-300' : '' }`}
+    >
+      <span> {date.format('D')} </span>
+    </div>
+  )
+}
+
+const Month = () => {
+  const params = useParams<MonthParams>()
+  const initialYear = Number(params.year)
+  const initialMonth = Number(params.month)
+  const [visibleMonth, setVisibleMonth] = useState(initialMonth)
+  const [visibleYear, setVisibleYear] = useState(initialYear)
+
+  const handleScroll = useCallback(({ scrollTop }: { scrollTop: number }) => {
+    const rowHeight = window.innerHeight / 6
+    const monthIndex = Math.floor(scrollTop / (rowHeight * 6))
+
+    const newMonth = initialMonth + monthIndex
+    const yearOffset = Math.floor((newMonth - 1) / 12)
+    const adjustedMonth = ((newMonth - 1) % 12) + 1
+    const newYear = initialYear + yearOffset
+
+    if (adjustedMonth !== visibleMonth || newYear !== visibleYear) {
+      setVisibleMonth(adjustedMonth)
+      setVisibleYear(newYear)
+    }
+  }, [initialMonth, initialYear, visibleMonth, visibleYear])
+
+  return (
+    <div className="h-screen">
+      looking at {getMonth(visibleMonth)} {visibleYear}
+      <div className='sticky top-2 h-14 bg-white grid rounded-xl grid-cols-7 mb-2'>
+        {getDateNames().map(day => (
+          <div key={day} className="flex justify-center items-center text-center font-semibold">
+            {day}
           </div>
         ))}
       </div>
-    </>
+      <AutoSizer>
+        {({ height, width }) => (
+          <FixedSizeGrid
+            columnCount={7}
+            columnWidth={width/7}
+            rowCount={1000}
+            rowHeight={height/6}
+            width={width}
+            height={height}
+            onScroll={handleScroll}
+          >
+            {DateCell}
+          </FixedSizeGrid>
+        )}
+      </AutoSizer>
+    </div>
   )
 }
 

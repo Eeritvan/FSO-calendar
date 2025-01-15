@@ -5,17 +5,22 @@ interface SelectorProps {
   children: ReactNode
 }
 
+interface SelectorChildProps {
+  to: string;
+  className?: string;
+}
+
 const Selector = ({ children }: SelectorProps) => {
   const { matches } = useBasePath()
   const childCount = Children.count(children)
 
   const childrenArray = Children.toArray(children)
   const activeIndex = childrenArray.findIndex(child =>
-    isValidElement(child) && matches(child.props.to)
+    isValidElement<SelectorChildProps>(child) && matches(child.props.to)
   )
 
   const styledSChildren = Children.map(children, child => {
-    if (!isValidElement(child)) {
+    if (!isValidElement<SelectorChildProps>(child)) {
       return child
     }
     const isActive = matches(child.props.to)
