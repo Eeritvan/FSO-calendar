@@ -1,9 +1,16 @@
 # FSO-calendar
 
-## tech-stack
+## progress
+- todo
+
+## running
+- todo
+
+## stack
 - frontend
-  - react
+  - react + vite +typescript
 - api
   - graphql
 - backend
-  - mongodb
+  - go
+  - psql
