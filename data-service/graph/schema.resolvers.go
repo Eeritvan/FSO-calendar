@@ -12,20 +12,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// User is the resolver for the user field.
-func (r *eventResolver) User(ctx context.Context, obj *model.Event) (uuid.UUID, error) {
-	panic(fmt.Errorf("not implemented: User - user"))
-}
-
-// Date is the resolver for the date field.
-func (r *eventResolver) Date(ctx context.Context, obj *model.Event) (string, error) {
-	panic(fmt.Errorf("not implemented: Date - date"))
-}
-
 // CreateEvent is the resolver for the createEvent field.
 func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent) (*model.Event, error) {
-	// Create a new event with the input data and a mock ID
-
 	event := &model.Event{
 		ID:    "example-event-id-123",
 		Title: input.Title,
@@ -44,29 +32,15 @@ func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
 
 // EventsRange is the resolver for the eventsRange field.
 func (r *queryResolver) EventsRange(ctx context.Context, input *model.Range) ([]*model.Event, error) {
-	var filteredEvents []*model.Event
+	fmt.Println(input.Start)
+	fmt.Println(input.End)
 
-	for _, event := range r.eventsList {
-		if !event.Date.Before(input.Start) && !event.Date.After(input.End) {
-			filteredEvents = append(filteredEvents, event)
-		}
+	for index, item := range r.eventsList {
+		fmt.Println(index, item.Date)
 	}
 
-	return filteredEvents, nil
+	return nil, nil
 }
-
-// Start is the resolver for the start field.
-func (r *rangeResolver) Start(ctx context.Context, obj *model.Range, data string) error {
-	panic(fmt.Errorf("not implemented: Start - start"))
-}
-
-// End is the resolver for the end field.
-func (r *rangeResolver) End(ctx context.Context, obj *model.Range, data string) error {
-	panic(fmt.Errorf("not implemented: End - end"))
-}
-
-// Event returns EventResolver implementation.
-func (r *Resolver) Event() EventResolver { return &eventResolver{r} }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
@@ -74,10 +48,5 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
-// Range returns RangeResolver implementation.
-func (r *Resolver) Range() RangeResolver { return &rangeResolver{r} }
-
-type eventResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-type rangeResolver struct{ *Resolver }
