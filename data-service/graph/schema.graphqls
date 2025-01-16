@@ -1,0 +1,32 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+scalar UUID
+scalar Date
+
+type Event {
+  id: ID!
+  title: String!
+  user: UUID!
+  date: Date!
+}
+
+input newEvent {
+  title: String!
+  date: Date!
+}
+
+input range {
+  start: Date!
+  end: Date!
+}
+
+type Query {
+  events: [Event!]!
+  eventsRange(input: range): [Event!]!
+}
+
+type Mutation {
+  createEvent(input: newEvent!): Event!
+}
