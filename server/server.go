@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -11,15 +12,31 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/eeritvan/calendar-server/graph"
+	"github.com/eeritvan/calendar-server/internal/db"
+	"github.com/joho/godotenv"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-const defaultPort = "8080"
+const defaultPort = "8081"
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Error loading .env file: %v", err)
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
+	}
+
+	ctx := context.Background()
+
+	DB := db.ConnectToDB(ctx)
+	if DB != nil {
+		if err := db.CheckForTable(DB, ctx); err != nil {
+			log.Fatalf("Checking for table failed: %v", err)
+		}
+		defer DB.Close(ctx)
 	}
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
