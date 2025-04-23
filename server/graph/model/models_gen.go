@@ -4,23 +4,26 @@ package model
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type CalEvent struct {
+	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description *string   `json:"description,omitempty"`
-	StartTime   time.Time `json:"start_time"`
-	EndTime     time.Time `json:"end_time"`
+	StartTime   time.Time `json:"startTime"`
+	EndTime     time.Time `json:"endTime"`
+}
+
+type CalEventInput struct {
+	Name        string    `json:"name"`
+	Description *string   `json:"description,omitempty"`
+	StartTime   time.Time `json:"startTime"`
+	EndTime     time.Time `json:"endTime"`
 }
 
 type Mutation struct {
-}
-
-type NewCalEvent struct {
-	Name        string    `json:"name"`
-	Description *string   `json:"description,omitempty"`
-	StartTime   time.Time `json:"start_time"`
-	EndTime     time.Time `json:"end_time"`
 }
 
 type Query struct {

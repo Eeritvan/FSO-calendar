@@ -16,6 +16,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/eeritvan/calendar-server/graph/model"
+	"github.com/google/uuid"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -51,24 +52,27 @@ type ComplexityRoot struct {
 	CalEvent struct {
 		Description func(childComplexity int) int
 		EndTime     func(childComplexity int) int
+		ID          func(childComplexity int) int
 		Name        func(childComplexity int) int
 		StartTime   func(childComplexity int) int
 	}
 
 	Mutation struct {
-		CreateCalEvent func(childComplexity int, input model.NewCalEvent) int
+		CreateCalEvent func(childComplexity int, input model.CalEventInput) int
+		DeleteCalEvent func(childComplexity int, input uuid.UUID) int
 	}
 
 	Query struct {
-		GetAllEvents func(childComplexity int) int
+		AllEvents func(childComplexity int) int
 	}
 }
 
 type MutationResolver interface {
-	CreateCalEvent(ctx context.Context, input model.NewCalEvent) (*model.CalEvent, error)
+	CreateCalEvent(ctx context.Context, input model.CalEventInput) (*model.CalEvent, error)
+	DeleteCalEvent(ctx context.Context, input uuid.UUID) (bool, error)
 }
 type QueryResolver interface {
-	GetAllEvents(ctx context.Context) ([]*model.CalEvent, error)
+	AllEvents(ctx context.Context) ([]*model.CalEvent, error)
 }
 
 type executableSchema struct {
@@ -97,12 +101,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.CalEvent.Description(childComplexity), true
 
-	case "CalEvent.end_time":
+	case "CalEvent.endTime":
 		if e.complexity.CalEvent.EndTime == nil {
 			break
 		}
 
 		return e.complexity.CalEvent.EndTime(childComplexity), true
+
+	case "CalEvent.id":
+		if e.complexity.CalEvent.ID == nil {
+			break
+		}
+
+		return e.complexity.CalEvent.ID(childComplexity), true
 
 	case "CalEvent.name":
 		if e.complexity.CalEvent.Name == nil {
@@ -111,7 +122,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.CalEvent.Name(childComplexity), true
 
-	case "CalEvent.start_time":
+	case "CalEvent.startTime":
 		if e.complexity.CalEvent.StartTime == nil {
 			break
 		}
@@ -128,14 +139,26 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateCalEvent(childComplexity, args["input"].(model.NewCalEvent)), true
+		return e.complexity.Mutation.CreateCalEvent(childComplexity, args["input"].(model.CalEventInput)), true
 
-	case "Query.getAllEvents":
-		if e.complexity.Query.GetAllEvents == nil {
+	case "Mutation.deleteCalEvent":
+		if e.complexity.Mutation.DeleteCalEvent == nil {
 			break
 		}
 
-		return e.complexity.Query.GetAllEvents(childComplexity), true
+		args, err := ec.field_Mutation_deleteCalEvent_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteCalEvent(childComplexity, args["input"].(uuid.UUID)), true
+
+	case "Query.allEvents":
+		if e.complexity.Query.AllEvents == nil {
+			break
+		}
+
+		return e.complexity.Query.AllEvents(childComplexity), true
 
 	}
 	return 0, false
@@ -145,7 +168,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputNewCalEvent,
+		ec.unmarshalInputCalEventInput,
 	)
 	first := true
 
@@ -275,13 +298,36 @@ func (ec *executionContext) field_Mutation_createCalEvent_args(ctx context.Conte
 func (ec *executionContext) field_Mutation_createCalEvent_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (model.NewCalEvent, error) {
+) (model.CalEventInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNNewCalEvent2githubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐNewCalEvent(ctx, tmp)
+		return ec.unmarshalNCalEventInput2githubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐCalEventInput(ctx, tmp)
 	}
 
-	var zeroVal model.NewCalEvent
+	var zeroVal model.CalEventInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteCalEvent_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_deleteCalEvent_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteCalEvent_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
 	return zeroVal, nil
 }
 
@@ -408,6 +454,50 @@ func (ec *executionContext) field___Type_fields_argsIncludeDeprecated(
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _CalEvent_id(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CalEvent_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uuid.UUID)
+	fc.Result = res
+	return ec.marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CalEvent_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CalEvent",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UUID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CalEvent_name(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CalEvent_name(ctx, field)
 	if err != nil {
@@ -493,8 +583,8 @@ func (ec *executionContext) fieldContext_CalEvent_description(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _CalEvent_start_time(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CalEvent_start_time(ctx, field)
+func (ec *executionContext) _CalEvent_startTime(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CalEvent_startTime(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -524,7 +614,7 @@ func (ec *executionContext) _CalEvent_start_time(ctx context.Context, field grap
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CalEvent_start_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CalEvent_startTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CalEvent",
 		Field:      field,
@@ -537,8 +627,8 @@ func (ec *executionContext) fieldContext_CalEvent_start_time(_ context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _CalEvent_end_time(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CalEvent_end_time(ctx, field)
+func (ec *executionContext) _CalEvent_endTime(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CalEvent_endTime(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -568,7 +658,7 @@ func (ec *executionContext) _CalEvent_end_time(ctx context.Context, field graphq
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CalEvent_end_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CalEvent_endTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CalEvent",
 		Field:      field,
@@ -595,7 +685,7 @@ func (ec *executionContext) _Mutation_createCalEvent(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateCalEvent(rctx, fc.Args["input"].(model.NewCalEvent))
+		return ec.resolvers.Mutation().CreateCalEvent(rctx, fc.Args["input"].(model.CalEventInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -620,14 +710,16 @@ func (ec *executionContext) fieldContext_Mutation_createCalEvent(ctx context.Con
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "id":
+				return ec.fieldContext_CalEvent_id(ctx, field)
 			case "name":
 				return ec.fieldContext_CalEvent_name(ctx, field)
 			case "description":
 				return ec.fieldContext_CalEvent_description(ctx, field)
-			case "start_time":
-				return ec.fieldContext_CalEvent_start_time(ctx, field)
-			case "end_time":
-				return ec.fieldContext_CalEvent_end_time(ctx, field)
+			case "startTime":
+				return ec.fieldContext_CalEvent_startTime(ctx, field)
+			case "endTime":
+				return ec.fieldContext_CalEvent_endTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CalEvent", field.Name)
 		},
@@ -646,8 +738,8 @@ func (ec *executionContext) fieldContext_Mutation_createCalEvent(ctx context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_getAllEvents(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_getAllEvents(ctx, field)
+func (ec *executionContext) _Mutation_deleteCalEvent(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteCalEvent(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -660,7 +752,62 @@ func (ec *executionContext) _Query_getAllEvents(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetAllEvents(rctx)
+		return ec.resolvers.Mutation().DeleteCalEvent(rctx, fc.Args["input"].(uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteCalEvent(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteCalEvent_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_allEvents(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_allEvents(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AllEvents(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -674,7 +821,7 @@ func (ec *executionContext) _Query_getAllEvents(ctx context.Context, field graph
 	return ec.marshalOCalEvent2ᚕᚖgithubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐCalEventᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_getAllEvents(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_allEvents(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -682,14 +829,16 @@ func (ec *executionContext) fieldContext_Query_getAllEvents(_ context.Context, f
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "id":
+				return ec.fieldContext_CalEvent_id(ctx, field)
 			case "name":
 				return ec.fieldContext_CalEvent_name(ctx, field)
 			case "description":
 				return ec.fieldContext_CalEvent_description(ctx, field)
-			case "start_time":
-				return ec.fieldContext_CalEvent_start_time(ctx, field)
-			case "end_time":
-				return ec.fieldContext_CalEvent_end_time(ctx, field)
+			case "startTime":
+				return ec.fieldContext_CalEvent_startTime(ctx, field)
+			case "endTime":
+				return ec.fieldContext_CalEvent_endTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CalEvent", field.Name)
 		},
@@ -2779,14 +2928,14 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputNewCalEvent(ctx context.Context, obj any) (model.NewCalEvent, error) {
-	var it model.NewCalEvent
+func (ec *executionContext) unmarshalInputCalEventInput(ctx context.Context, obj any) (model.CalEventInput, error) {
+	var it model.CalEventInput
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "description", "start_time", "end_time"}
+	fieldsInOrder := [...]string{"name", "description", "startTime", "endTime"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2807,15 +2956,15 @@ func (ec *executionContext) unmarshalInputNewCalEvent(ctx context.Context, obj a
 				return it, err
 			}
 			it.Description = data
-		case "start_time":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("start_time"))
+		case "startTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startTime"))
 			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.StartTime = data
-		case "end_time":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("end_time"))
+		case "endTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("endTime"))
 			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
@@ -2846,6 +2995,11 @@ func (ec *executionContext) _CalEvent(ctx context.Context, sel ast.SelectionSet,
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("CalEvent")
+		case "id":
+			out.Values[i] = ec._CalEvent_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "name":
 			out.Values[i] = ec._CalEvent_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -2853,13 +3007,13 @@ func (ec *executionContext) _CalEvent(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "description":
 			out.Values[i] = ec._CalEvent_description(ctx, field, obj)
-		case "start_time":
-			out.Values[i] = ec._CalEvent_start_time(ctx, field, obj)
+		case "startTime":
+			out.Values[i] = ec._CalEvent_startTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "end_time":
-			out.Values[i] = ec._CalEvent_end_time(ctx, field, obj)
+		case "endTime":
+			out.Values[i] = ec._CalEvent_endTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -2912,6 +3066,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "deleteCalEvent":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteCalEvent(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2954,7 +3115,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "getAllEvents":
+		case "allEvents":
 			field := field
 
 			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
@@ -2963,7 +3124,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getAllEvents(ctx, field)
+				res = ec._Query_allEvents(ctx, field)
 				return res
 			}
 
@@ -3368,8 +3529,8 @@ func (ec *executionContext) marshalNCalEvent2ᚖgithubᚗcomᚋeeritvanᚋcalend
 	return ec._CalEvent(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNNewCalEvent2githubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐNewCalEvent(ctx context.Context, v any) (model.NewCalEvent, error) {
-	res, err := ec.unmarshalInputNewCalEvent(ctx, v)
+func (ec *executionContext) unmarshalNCalEventInput2githubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐCalEventInput(ctx context.Context, v any) (model.CalEventInput, error) {
+	res, err := ec.unmarshalInputCalEventInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -3395,6 +3556,21 @@ func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v an
 
 func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
 	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx context.Context, v any) (uuid.UUID, error) {
+	res, err := graphql.UnmarshalUUID(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx context.Context, sel ast.SelectionSet, v uuid.UUID) graphql.Marshaler {
+	res := graphql.MarshalUUID(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

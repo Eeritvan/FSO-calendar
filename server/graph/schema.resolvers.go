@@ -9,18 +9,20 @@ import (
 	"log"
 
 	"github.com/eeritvan/calendar-server/graph/model"
+	"github.com/google/uuid"
 )
 
 // CreateCalEvent is the resolver for the createCalEvent field.
-func (r *mutationResolver) CreateCalEvent(ctx context.Context, input model.NewCalEvent) (*model.CalEvent, error) {
+func (r *mutationResolver) CreateCalEvent(ctx context.Context, input model.CalEventInput) (*model.CalEvent, error) {
 	// todo: better refactor
 
 	var event model.CalEvent
 	if err := r.DB.QueryRow(ctx, `
 		INSERT INTO events (name, description, start_time, end_time)
 		VALUES ($1, $2, $3, $4)
-		RETURNING name, description, start_time, end_time
+		RETURNING id, name, description, start_time, end_time
 	`, input.Name, input.Description, input.StartTime, input.EndTime).Scan(
+		&event.ID,
 		&event.Name,
 		&event.Description,
 		&event.StartTime,
@@ -33,14 +35,27 @@ func (r *mutationResolver) CreateCalEvent(ctx context.Context, input model.NewCa
 	return &event, nil
 }
 
-// GetAllEvents is the resolver for the getAllEvents field.
-func (r *queryResolver) GetAllEvents(ctx context.Context) ([]*model.CalEvent, error) {
-	// todo: better refactor
+// DeleteCalEvent is the resolver for the deleteCalEvent field.
+func (r *mutationResolver) DeleteCalEvent(ctx context.Context, input uuid.UUID) (bool, error) {
+	// panic(fmt.Errorf("not implemented: DeleteCalEvent - deleteCalEvent"))
+	if _, err := r.DB.Exec(ctx, `
+		DELETE FROM events
+		WHERE id = $1
+	`, input); err != nil {
+		log.Printf("%v", err)
+		return false, err
+	}
+	return true, nil
+}
 
+// AllEvents is the resolver for the allEvents field.
+func (r *queryResolver) AllEvents(ctx context.Context) ([]*model.CalEvent, error) {
+	// todo: better refactor
 	rows, err := r.DB.Query(ctx, `
-		SELECT name, description, start_time, end_time
+		SELECT id, name, description, start_time, end_time
 		FROM events
 	`)
+
 	if err != nil {
 		return nil, err
 	}
@@ -49,6 +64,7 @@ func (r *queryResolver) GetAllEvents(ctx context.Context) ([]*model.CalEvent, er
 	for rows.Next() {
 		var event model.CalEvent
 		if err := rows.Scan(
+			&event.ID,
 			&event.Name,
 			&event.Description,
 			&event.StartTime,
