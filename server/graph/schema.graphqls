@@ -1,0 +1,20 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type CalEvent {
+  id: ID!
+  name: String!
+}
+
+input NewCalEvent {
+  name: String!
+}
+
+type Query {
+  getCalEvents: [CalEvent!]
+}
+
+type Mutation {
+  createCalEvent(input: NewCalEvent!): CalEvent!
+}
