@@ -1,7 +1,7 @@
 scalar Time
 scalar UUID
 
-type CalEvent {
+type Event {
   id: UUID!
   name: String!
   description: String
@@ -9,7 +9,7 @@ type CalEvent {
   endTime: Time!
 }
 
-input CalEventInput {
+input EventInput {
   name: String!
   description: String
   startTime: Time!
@@ -17,10 +17,11 @@ input CalEventInput {
 }
 
 type Query {
-  allEvents: [CalEvent!]
+  allEvents: [Event!]
 }
 
 type Mutation {
-  createCalEvent(input: CalEventInput!): CalEvent!
-  deleteCalEvent(input: UUID!): Boolean!
+  createEvent(input: EventInput!): Event!
+  updateEvent(input: UUID!): Boolean!
+  deleteEvent(input: UUID!): Boolean!
 }

@@ -6,17 +6,18 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/eeritvan/calendar-server/graph/model"
 	"github.com/google/uuid"
 )
 
-// CreateCalEvent is the resolver for the createCalEvent field.
-func (r *mutationResolver) CreateCalEvent(ctx context.Context, input model.CalEventInput) (*model.CalEvent, error) {
+// CreateEvent is the resolver for the createEvent field.
+func (r *mutationResolver) CreateEvent(ctx context.Context, input model.EventInput) (*model.Event, error) {
 	// todo: better refactor
 
-	var event model.CalEvent
+	var event model.Event
 	if err := r.DB.QueryRow(ctx, `
 		INSERT INTO events (name, description, start_time, end_time)
 		VALUES ($1, $2, $3, $4)
@@ -35,9 +36,15 @@ func (r *mutationResolver) CreateCalEvent(ctx context.Context, input model.CalEv
 	return &event, nil
 }
 
-// DeleteCalEvent is the resolver for the deleteCalEvent field.
-func (r *mutationResolver) DeleteCalEvent(ctx context.Context, input uuid.UUID) (bool, error) {
-	// panic(fmt.Errorf("not implemented: DeleteCalEvent - deleteCalEvent"))
+// UpdateEvent is the resolver for the updateEvent field.
+func (r *mutationResolver) UpdateEvent(ctx context.Context, input uuid.UUID) (bool, error) {
+	panic(fmt.Errorf("not implemented: UpdateEvent - updateEvent"))
+}
+
+// DeleteEvent is the resolver for the deleteEvent field.
+func (r *mutationResolver) DeleteEvent(ctx context.Context, input uuid.UUID) (bool, error) {
+	// todo: better refactor
+
 	if _, err := r.DB.Exec(ctx, `
 		DELETE FROM events
 		WHERE id = $1
@@ -49,7 +56,7 @@ func (r *mutationResolver) DeleteCalEvent(ctx context.Context, input uuid.UUID) 
 }
 
 // AllEvents is the resolver for the allEvents field.
-func (r *queryResolver) AllEvents(ctx context.Context) ([]*model.CalEvent, error) {
+func (r *queryResolver) AllEvents(ctx context.Context) ([]*model.Event, error) {
 	// todo: better refactor
 	rows, err := r.DB.Query(ctx, `
 		SELECT id, name, description, start_time, end_time
@@ -60,9 +67,9 @@ func (r *queryResolver) AllEvents(ctx context.Context) ([]*model.CalEvent, error
 		return nil, err
 	}
 
-	var events []*model.CalEvent
+	var events []*model.Event
 	for rows.Next() {
-		var event model.CalEvent
+		var event model.Event
 		if err := rows.Scan(
 			&event.ID,
 			&event.Name,

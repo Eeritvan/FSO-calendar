@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type CalEvent struct {
+type Event struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description *string   `json:"description,omitempty"`
@@ -16,7 +16,7 @@ type CalEvent struct {
 	EndTime     time.Time `json:"endTime"`
 }
 
-type CalEventInput struct {
+type EventInput struct {
 	Name        string    `json:"name"`
 	Description *string   `json:"description,omitempty"`
 	StartTime   time.Time `json:"startTime"`
