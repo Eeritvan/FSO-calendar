@@ -1,18 +1,21 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
+scalar Time
 
 type CalEvent {
-  id: ID!
   name: String!
+  description: String
+  start_time: Time!
+  end_time: Time!
 }
 
 input NewCalEvent {
   name: String!
+  description: String
+  start_time: Time!
+  end_time: Time!
 }
 
 type Query {
-  getCalEvents: [CalEvent!]
+  getAllEvents: [CalEvent!]
 }
 
 type Mutation {

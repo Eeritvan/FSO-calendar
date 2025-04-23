@@ -6,32 +6,61 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"github.com/eeritvan/calendar-server/graph/model"
 )
 
 // CreateCalEvent is the resolver for the createCalEvent field.
 func (r *mutationResolver) CreateCalEvent(ctx context.Context, input model.NewCalEvent) (*model.CalEvent, error) {
-	fmt.Println(input.Name)
-	return nil, nil
+	// todo: better refactor
+
+	var event model.CalEvent
+	if err := r.DB.QueryRow(ctx, `
+		INSERT INTO events (name, description, start_time, end_time)
+		VALUES ($1, $2, $3, $4)
+		RETURNING name, description, start_time, end_time
+	`, input.Name, input.Description, input.StartTime, input.EndTime).Scan(
+		&event.Name,
+		&event.Description,
+		&event.StartTime,
+		&event.EndTime,
+	); err != nil {
+		log.Printf("%v", err)
+		// todo: better error handling
+		return nil, err
+	}
+	return &event, nil
 }
 
-// GetCalEvents is the resolver for the getCalEvents field.
-func (r *queryResolver) GetCalEvents(ctx context.Context) ([]*model.CalEvent, error) {
-	events := []*model.CalEvent{
-		{
-			ID:   "1",
-			Name: "testi1",
-		},
-		{
-			ID:   "2",
-			Name: "testi2",
-		},
-		{
-			ID:   "3",
-			Name: "testi3",
-		},
+// GetAllEvents is the resolver for the getAllEvents field.
+func (r *queryResolver) GetAllEvents(ctx context.Context) ([]*model.CalEvent, error) {
+	// todo: better refactor
+
+	rows, err := r.DB.Query(ctx, `
+		SELECT name, description, start_time, end_time
+		FROM events
+	`)
+	if err != nil {
+		return nil, err
+	}
+
+	var events []*model.CalEvent
+	for rows.Next() {
+		var event model.CalEvent
+		if err := rows.Scan(
+			&event.Name,
+			&event.Description,
+			&event.StartTime,
+			&event.EndTime,
+		); err != nil {
+			return nil, err
+		}
+		events = append(events, &event)
+	}
+	if err = rows.Err(); err != nil {
+		// todo: better error handling
+		return nil, err
 	}
 
 	return events, nil

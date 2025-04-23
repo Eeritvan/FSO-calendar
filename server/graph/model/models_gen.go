@@ -2,16 +2,25 @@
 
 package model
 
+import (
+	"time"
+)
+
 type CalEvent struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	Name        string    `json:"name"`
+	Description *string   `json:"description,omitempty"`
+	StartTime   time.Time `json:"start_time"`
+	EndTime     time.Time `json:"end_time"`
 }
 
 type Mutation struct {
 }
 
 type NewCalEvent struct {
-	Name string `json:"name"`
+	Name        string    `json:"name"`
+	Description *string   `json:"description,omitempty"`
+	StartTime   time.Time `json:"start_time"`
+	EndTime     time.Time `json:"end_time"`
 }
 
 type Query struct {

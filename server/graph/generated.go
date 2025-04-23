@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -48,8 +49,10 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	CalEvent struct {
-		ID   func(childComplexity int) int
-		Name func(childComplexity int) int
+		Description func(childComplexity int) int
+		EndTime     func(childComplexity int) int
+		Name        func(childComplexity int) int
+		StartTime   func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -57,7 +60,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetCalEvents func(childComplexity int) int
+		GetAllEvents func(childComplexity int) int
 	}
 }
 
@@ -65,7 +68,7 @@ type MutationResolver interface {
 	CreateCalEvent(ctx context.Context, input model.NewCalEvent) (*model.CalEvent, error)
 }
 type QueryResolver interface {
-	GetCalEvents(ctx context.Context) ([]*model.CalEvent, error)
+	GetAllEvents(ctx context.Context) ([]*model.CalEvent, error)
 }
 
 type executableSchema struct {
@@ -87,12 +90,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	_ = ec
 	switch typeName + "." + field {
 
-	case "CalEvent.id":
-		if e.complexity.CalEvent.ID == nil {
+	case "CalEvent.description":
+		if e.complexity.CalEvent.Description == nil {
 			break
 		}
 
-		return e.complexity.CalEvent.ID(childComplexity), true
+		return e.complexity.CalEvent.Description(childComplexity), true
+
+	case "CalEvent.end_time":
+		if e.complexity.CalEvent.EndTime == nil {
+			break
+		}
+
+		return e.complexity.CalEvent.EndTime(childComplexity), true
 
 	case "CalEvent.name":
 		if e.complexity.CalEvent.Name == nil {
@@ -100,6 +110,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.CalEvent.Name(childComplexity), true
+
+	case "CalEvent.start_time":
+		if e.complexity.CalEvent.StartTime == nil {
+			break
+		}
+
+		return e.complexity.CalEvent.StartTime(childComplexity), true
 
 	case "Mutation.createCalEvent":
 		if e.complexity.Mutation.CreateCalEvent == nil {
@@ -113,12 +130,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.CreateCalEvent(childComplexity, args["input"].(model.NewCalEvent)), true
 
-	case "Query.getCalEvents":
-		if e.complexity.Query.GetCalEvents == nil {
+	case "Query.getAllEvents":
+		if e.complexity.Query.GetAllEvents == nil {
 			break
 		}
 
-		return e.complexity.Query.GetCalEvents(childComplexity), true
+		return e.complexity.Query.GetAllEvents(childComplexity), true
 
 	}
 	return 0, false
@@ -391,50 +408,6 @@ func (ec *executionContext) field___Type_fields_argsIncludeDeprecated(
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _CalEvent_id(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CalEvent_id(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_CalEvent_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CalEvent",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _CalEvent_name(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CalEvent_name(ctx, field)
 	if err != nil {
@@ -479,6 +452,135 @@ func (ec *executionContext) fieldContext_CalEvent_name(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _CalEvent_description(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CalEvent_description(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CalEvent_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CalEvent",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CalEvent_start_time(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CalEvent_start_time(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CalEvent_start_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CalEvent",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CalEvent_end_time(ctx context.Context, field graphql.CollectedField, obj *model.CalEvent) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CalEvent_end_time(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CalEvent_end_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CalEvent",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createCalEvent(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createCalEvent(ctx, field)
 	if err != nil {
@@ -518,10 +620,14 @@ func (ec *executionContext) fieldContext_Mutation_createCalEvent(ctx context.Con
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_CalEvent_id(ctx, field)
 			case "name":
 				return ec.fieldContext_CalEvent_name(ctx, field)
+			case "description":
+				return ec.fieldContext_CalEvent_description(ctx, field)
+			case "start_time":
+				return ec.fieldContext_CalEvent_start_time(ctx, field)
+			case "end_time":
+				return ec.fieldContext_CalEvent_end_time(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CalEvent", field.Name)
 		},
@@ -540,8 +646,8 @@ func (ec *executionContext) fieldContext_Mutation_createCalEvent(ctx context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_getCalEvents(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_getCalEvents(ctx, field)
+func (ec *executionContext) _Query_getAllEvents(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getAllEvents(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -554,7 +660,7 @@ func (ec *executionContext) _Query_getCalEvents(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetCalEvents(rctx)
+		return ec.resolvers.Query().GetAllEvents(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -568,7 +674,7 @@ func (ec *executionContext) _Query_getCalEvents(ctx context.Context, field graph
 	return ec.marshalOCalEvent2ᚕᚖgithubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐCalEventᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_getCalEvents(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_getAllEvents(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -576,10 +682,14 @@ func (ec *executionContext) fieldContext_Query_getCalEvents(_ context.Context, f
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_CalEvent_id(ctx, field)
 			case "name":
 				return ec.fieldContext_CalEvent_name(ctx, field)
+			case "description":
+				return ec.fieldContext_CalEvent_description(ctx, field)
+			case "start_time":
+				return ec.fieldContext_CalEvent_start_time(ctx, field)
+			case "end_time":
+				return ec.fieldContext_CalEvent_end_time(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CalEvent", field.Name)
 		},
@@ -2676,7 +2786,7 @@ func (ec *executionContext) unmarshalInputNewCalEvent(ctx context.Context, obj a
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name"}
+	fieldsInOrder := [...]string{"name", "description", "start_time", "end_time"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2690,6 +2800,27 @@ func (ec *executionContext) unmarshalInputNewCalEvent(ctx context.Context, obj a
 				return it, err
 			}
 			it.Name = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
+		case "start_time":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("start_time"))
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StartTime = data
+		case "end_time":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("end_time"))
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.EndTime = data
 		}
 	}
 
@@ -2715,13 +2846,20 @@ func (ec *executionContext) _CalEvent(ctx context.Context, sel ast.SelectionSet,
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("CalEvent")
-		case "id":
-			out.Values[i] = ec._CalEvent_id(ctx, field, obj)
+		case "name":
+			out.Values[i] = ec._CalEvent_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "name":
-			out.Values[i] = ec._CalEvent_name(ctx, field, obj)
+		case "description":
+			out.Values[i] = ec._CalEvent_description(ctx, field, obj)
+		case "start_time":
+			out.Values[i] = ec._CalEvent_start_time(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "end_time":
+			out.Values[i] = ec._CalEvent_end_time(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -2816,7 +2954,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "getCalEvents":
+		case "getAllEvents":
 			field := field
 
 			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
@@ -2825,7 +2963,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getCalEvents(ctx, field)
+				res = ec._Query_getAllEvents(ctx, field)
 				return res
 			}
 
@@ -3230,21 +3368,6 @@ func (ec *executionContext) marshalNCalEvent2ᚖgithubᚗcomᚋeeritvanᚋcalend
 	return ec._CalEvent(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v any) (string, error) {
-	res, err := graphql.UnmarshalID(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalID(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
-}
-
 func (ec *executionContext) unmarshalNNewCalEvent2githubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐNewCalEvent(ctx context.Context, v any) (model.NewCalEvent, error) {
 	res, err := ec.unmarshalInputNewCalEvent(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3257,6 +3380,21 @@ func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) 
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
