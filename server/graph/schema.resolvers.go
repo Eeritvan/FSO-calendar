@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/eeritvan/calendar-server/graph/model"
@@ -37,8 +36,29 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.EventInp
 }
 
 // UpdateEvent is the resolver for the updateEvent field.
-func (r *mutationResolver) UpdateEvent(ctx context.Context, input uuid.UUID) (bool, error) {
-	panic(fmt.Errorf("not implemented: UpdateEvent - updateEvent"))
+func (r *mutationResolver) UpdateEvent(ctx context.Context, id uuid.UUID, input model.UpdateEventInput) (*model.Event, error) {
+	var updatedEvent model.Event
+	if err := r.DB.QueryRow(ctx, `
+        UPDATE events
+        SET name = COALESCE($2, name),
+			description = COALESCE($3, description),
+			start_time = COALESCE($4, start_time),
+			end_time = COALESCE($5, end_time)
+        WHERE id = $1
+		RETURNING id, name, description, start_time, end_time
+	`, id, input.Name, input.Description, input.StartTime, input.EndTime).Scan(
+		&updatedEvent.ID,
+		&updatedEvent.Name,
+		&updatedEvent.Description,
+		&updatedEvent.StartTime,
+		&updatedEvent.EndTime,
+	); err != nil {
+		log.Printf("%v", err)
+		// todo: better error handling
+		return nil, err
+	}
+
+	return &updatedEvent, nil
 }
 
 // DeleteEvent is the resolver for the deleteEvent field.

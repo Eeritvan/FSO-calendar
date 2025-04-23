@@ -16,12 +16,19 @@ input EventInput {
   endTime: Time!
 }
 
+input UpdateEventInput {
+  name: String
+  description: String
+  startTime: Time
+  endTime: Time
+}
+
 type Query {
   allEvents: [Event!]
 }
 
 type Mutation {
   createEvent(input: EventInput!): Event!
-  updateEvent(input: UUID!): Boolean!
+  updateEvent(id: UUID!, input: UpdateEventInput!): Event!
   deleteEvent(input: UUID!): Boolean!
 }

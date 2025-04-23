@@ -28,3 +28,10 @@ type Mutation struct {
 
 type Query struct {
 }
+
+type UpdateEventInput struct {
+	Name        *string    `json:"name,omitempty"`
+	Description *string    `json:"description,omitempty"`
+	StartTime   *time.Time `json:"startTime,omitempty"`
+	EndTime     *time.Time `json:"endTime,omitempty"`
+}
