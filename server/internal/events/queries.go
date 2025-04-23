@@ -68,6 +68,7 @@ func DB_DeleteEvent(ctx context.Context, db DBConnection, id uuid.UUID) (bool, e
 		WHERE id = $1
 	`, id); err != nil {
 		log.Printf("%v", err)
+		// todo: better error handling
 		return false, err
 	}
 	return true, nil

@@ -16,7 +16,7 @@ import (
 func (r *mutationResolver) CreateEvent(ctx context.Context, input model.EventInput) (*model.Event, error) {
 	event, err := events.DB_CreateEvent(ctx, r.DB, input)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return event, nil
@@ -26,7 +26,7 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.EventInp
 func (r *mutationResolver) UpdateEvent(ctx context.Context, id uuid.UUID, input model.UpdateEventInput) (*model.Event, error) {
 	event, err := events.DB_UpdateEvent(ctx, r.DB, id, input)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return event, nil
@@ -36,7 +36,7 @@ func (r *mutationResolver) UpdateEvent(ctx context.Context, id uuid.UUID, input 
 func (r *mutationResolver) DeleteEvent(ctx context.Context, id uuid.UUID) (bool, error) {
 	result, err := events.DB_DeleteEvent(ctx, r.DB, id)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 
 	return result, nil
@@ -46,7 +46,7 @@ func (r *mutationResolver) DeleteEvent(ctx context.Context, id uuid.UUID) (bool,
 func (r *queryResolver) AllEvents(ctx context.Context) ([]*model.Event, error) {
 	events, err := events.DB_getAllEvents(ctx, r.DB)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return events, nil
