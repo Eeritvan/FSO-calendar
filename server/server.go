@@ -20,7 +20,10 @@ const defaultPort = "8081"
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("ok"))
+	if _, err := w.Write([]byte("ok")); err != nil {
+		// todo: better error handling
+		log.Print("health check failed")
+	}
 }
 
 func main() {
@@ -35,7 +38,12 @@ func main() {
 		if err := db.CheckForTable(DB, ctx); err != nil {
 			log.Fatalf("Checking for table failed: %v", err)
 		}
-		defer DB.Close(ctx)
+		defer func() {
+			if err := DB.Close(ctx); err != nil {
+				// todo: better error handling
+				log.Printf("%v", err)
+			}
+		}()
 	}
 
 	port := os.Getenv("PORT")

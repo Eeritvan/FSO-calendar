@@ -14,6 +14,9 @@ build: clean
 
 test:
 
+lint:
+	golangci-lint run
+
 clean:
 	rm -f $(BINARY_NAME)
 
