@@ -10,7 +10,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/eeritvan/calendar-server/graph"
 	"github.com/eeritvan/calendar-server/internal/db"
 	"github.com/joho/godotenv"
@@ -19,14 +18,14 @@ import (
 
 const defaultPort = "8081"
 
+func healthCheck(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("ok"))
+}
+
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Printf("Error loading .env file: %v", err)
-	}
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
 	}
 
 	ctx := context.Background()
@@ -39,7 +38,16 @@ func main() {
 		defer DB.Close(ctx)
 	}
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
+	}
+
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{
+		Resolvers: &graph.Resolver{
+			DB: DB,
+		},
+	}))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
@@ -52,9 +60,8 @@ func main() {
 		Cache: lru.New[string](100),
 	})
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/healthz", http.HandlerFunc(healthCheck))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
