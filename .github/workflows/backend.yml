@@ -1,0 +1,41 @@
+name: backend pipeline
+
+on:
+  push:
+    paths:
+      - backend/**
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1.24.2'
+        cache-dependency-path: backend/go.sum
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v6
+      with:
+        version: latest
+        working-directory: backend
+
+  test:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24.2'
+        cache-dependency-path: backend/go.sum
+    - name: Install dependencies
+      run: go mod download
+    - name: Run Unit Tests
+      run: go test -covermode=atomic -coverprofile=coverage.out $(cat testdirs.txt)
