@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eeritvan/calendar-server/graph/model"
+	"github.com/eeritvan/calendar/graph/model"
 	"github.com/google/uuid"
 	"github.com/pashagolub/pgxmock/v4"
 )

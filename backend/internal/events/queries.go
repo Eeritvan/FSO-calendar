@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/eeritvan/calendar-server/graph/model"
+	"github.com/eeritvan/calendar/graph/model"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"

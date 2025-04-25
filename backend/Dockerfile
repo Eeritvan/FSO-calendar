@@ -6,9 +6,11 @@ COPY . .
 RUN go mod download && \
     go mod verify && \
     GOOS=linux GOARCH=amd64 go build -ldflags "-w -s -extldflags '-static -Wl,--strip-all,--gc-sections'"
+
+
 FROM scratch
 
-COPY --from=build /build/calendar-server /calendar-server
+COPY --from=build /build/calendar-backend /calendar-backend
 COPY --from=build /build/schema.sql /schema.sql
 
-CMD ["/calendar-server"]
+CMD ["/calendar-backend"]

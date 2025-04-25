@@ -10,8 +10,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/eeritvan/calendar-server/graph"
-	"github.com/eeritvan/calendar-server/internal/db"
+	"github.com/eeritvan/calendar/graph"
+	"github.com/eeritvan/calendar/internal/db"
 	"github.com/joho/godotenv"
 	"github.com/vektah/gqlparser/v2/ast"
 )

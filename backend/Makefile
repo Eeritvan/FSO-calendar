@@ -2,7 +2,7 @@ GOCMD=go
 GORUN=$(GOCMD) run
 GOBUILD=$(GOCMD) build
 GOTEST=$(GOCMD) test
-BINARY_NAME=calendar-server
+BINARY_NAME=calendar-backend
 
 .PHONY: start build test clean generate
 

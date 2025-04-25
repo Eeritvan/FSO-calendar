@@ -7,8 +7,8 @@ package graph
 import (
 	"context"
 
-	"github.com/eeritvan/calendar-server/graph/model"
-	"github.com/eeritvan/calendar-server/internal/events"
+	"github.com/eeritvan/calendar/graph/model"
+	"github.com/eeritvan/calendar/internal/events"
 	"github.com/google/uuid"
 )
 
@@ -33,8 +33,8 @@ func (r *mutationResolver) UpdateEvent(ctx context.Context, id uuid.UUID, input 
 }
 
 // DeleteEvent is the resolver for the deleteEvent field.
-func (r *mutationResolver) DeleteEvent(ctx context.Context, id uuid.UUID) (bool, error) {
-	result, err := events.DB_DeleteEvent(ctx, r.DB, id)
+func (r *mutationResolver) DeleteEvent(ctx context.Context, input uuid.UUID) (bool, error) {
+	result, err := events.DB_DeleteEvent(ctx, r.DB, input)
 	if err != nil {
 		return false, err
 	}

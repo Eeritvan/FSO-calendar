@@ -15,7 +15,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/eeritvan/calendar-server/graph/model"
+	"github.com/eeritvan/calendar/graph/model"
 	"github.com/google/uuid"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -316,7 +316,7 @@ func (ec *executionContext) field_Mutation_createEvent_argsInput(
 ) (model.EventInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNEventInput2githubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐEventInput(ctx, tmp)
+		return ec.unmarshalNEventInput2githubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐEventInput(ctx, tmp)
 	}
 
 	var zeroVal model.EventInput
@@ -380,7 +380,7 @@ func (ec *executionContext) field_Mutation_updateEvent_argsInput(
 ) (model.UpdateEventInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNUpdateEventInput2githubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐUpdateEventInput(ctx, tmp)
+		return ec.unmarshalNUpdateEventInput2githubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐUpdateEventInput(ctx, tmp)
 	}
 
 	var zeroVal model.UpdateEventInput
@@ -755,7 +755,7 @@ func (ec *executionContext) _Mutation_createEvent(ctx context.Context, field gra
 	}
 	res := resTmp.(*model.Event)
 	fc.Result = res
-	return ec.marshalNEvent2ᚖgithubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐEvent(ctx, field.Selections, res)
+	return ec.marshalNEvent2ᚖgithubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐEvent(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createEvent(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -822,7 +822,7 @@ func (ec *executionContext) _Mutation_updateEvent(ctx context.Context, field gra
 	}
 	res := resTmp.(*model.Event)
 	fc.Result = res
-	return ec.marshalNEvent2ᚖgithubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐEvent(ctx, field.Selections, res)
+	return ec.marshalNEvent2ᚖgithubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐEvent(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateEvent(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -941,7 +941,7 @@ func (ec *executionContext) _Query_allEvents(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*model.Event)
 	fc.Result = res
-	return ec.marshalOEvent2ᚕᚖgithubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐEventᚄ(ctx, field.Selections, res)
+	return ec.marshalOEvent2ᚕᚖgithubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐEventᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_allEvents(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3693,11 +3693,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNEvent2githubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v model.Event) graphql.Marshaler {
+func (ec *executionContext) marshalNEvent2githubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v model.Event) graphql.Marshaler {
 	return ec._Event(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNEvent2ᚖgithubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v *model.Event) graphql.Marshaler {
+func (ec *executionContext) marshalNEvent2ᚖgithubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v *model.Event) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3707,7 +3707,7 @@ func (ec *executionContext) marshalNEvent2ᚖgithubᚗcomᚋeeritvanᚋcalendar�
 	return ec._Event(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNEventInput2githubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐEventInput(ctx context.Context, v any) (model.EventInput, error) {
+func (ec *executionContext) unmarshalNEventInput2githubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐEventInput(ctx context.Context, v any) (model.EventInput, error) {
 	res, err := ec.unmarshalInputEventInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -3757,7 +3757,7 @@ func (ec *executionContext) marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx
 	return res
 }
 
-func (ec *executionContext) unmarshalNUpdateEventInput2githubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐUpdateEventInput(ctx context.Context, v any) (model.UpdateEventInput, error) {
+func (ec *executionContext) unmarshalNUpdateEventInput2githubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐUpdateEventInput(ctx context.Context, v any) (model.UpdateEventInput, error) {
 	res, err := ec.unmarshalInputUpdateEventInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -4039,7 +4039,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) marshalOEvent2ᚕᚖgithubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐEventᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Event) graphql.Marshaler {
+func (ec *executionContext) marshalOEvent2ᚕᚖgithubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐEventᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Event) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -4066,7 +4066,7 @@ func (ec *executionContext) marshalOEvent2ᚕᚖgithubᚗcomᚋeeritvanᚋcalend
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNEvent2ᚖgithubᚗcomᚋeeritvanᚋcalendarᚑserverᚋgraphᚋmodelᚐEvent(ctx, sel, v[i])
+			ret[i] = ec.marshalNEvent2ᚖgithubᚗcomᚋeeritvanᚋcalendarᚋgraphᚋmodelᚐEvent(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
