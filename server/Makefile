@@ -13,7 +13,7 @@ build: clean
 	$(GOBUILD) -o $(BINARY_NAME)
 
 test:
-	$(GOTEST) ./...
+	$(GOTEST) $(shell cat testdirs.txt)
 
 lint:
 	golangci-lint run
