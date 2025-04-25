@@ -1,3 +1,4 @@
+import React from "react";
 import {
   isRouteErrorResponse,
   Links,
@@ -5,23 +6,29 @@ import {
   NavLink,
   Outlet,
   Scripts,
-  ScrollRestoration,
+  ScrollRestoration
 } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
-import { Client, cacheExchange, fetchExchange, ssrExchange, Provider } from 'urql';
+import {
+  Client,
+  cacheExchange,
+  fetchExchange,
+  ssrExchange,
+  Provider
+} from "urql";
 
-const isServerSide = typeof window === 'undefined';
+const isServerSide = typeof window === "undefined";
 
 const ssr = ssrExchange({
   isClient: !isServerSide,
-  initialState: !isServerSide ? window.__URQL_DATA__ : undefined,
+  initialState: !isServerSide ? window.__URQL_DATA__ : undefined
 });
 
 export const client = new Client({
-  url: 'http://localhost:8081/query',
+  url: "http://localhost:8081/query",
   suspense: true,
-  exchanges: [cacheExchange, ssr, fetchExchange],
+  exchanges: [cacheExchange, ssr, fetchExchange]
 });
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -40,7 +47,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       </body>
     </html>
   );
-}
+};
 
 export const ErrorBoundary = ({ error }: Route.ErrorBoundaryProps) => {
   let message = "Oops!";
@@ -69,7 +76,7 @@ export const ErrorBoundary = ({ error }: Route.ErrorBoundaryProps) => {
       )}
     </main>
   );
-}
+};
 
 const App = () => {
   return (
@@ -79,6 +86,6 @@ const App = () => {
       <Outlet />
     </Provider>
   );
-}
+};
 
-export default App
+export default App;

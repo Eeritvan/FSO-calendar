@@ -1,9 +1,9 @@
+import React from "react";
 import type { Route } from "./+types/test";
 import { gql } from "urql";
 import { client } from "../root";
 import type { UUID } from "crypto";
 import { Form, type ActionFunctionArgs } from "react-router";
-
 
 const GET_QUERY = gql`
   query getAllEvents {
@@ -24,7 +24,11 @@ const DELETE_QUERY = gql`
 `;
 
 const ADD_QUERY = gql`
-  mutation CreateEvent($name: String!, $description: String, $startTime: Time!, $endTime: Time!) {
+  mutation CreateEvent(
+    $name: String!,
+    $description: String,
+    $startTime: Time!,
+    $endTime: Time!) {
     createEvent(input: {
       name: $name,
       description: $description,
@@ -43,32 +47,38 @@ const ADD_QUERY = gql`
 export const meta = ({}: Route.MetaArgs) => {
   return [
     { title: "test2" },
-    { name: "description", content: "Welcome to React Router!" },
+    { name: "description", content: "Welcome to React Router!" }
   ];
-}
+};
 
 export const loader = async () => {
-  console.log("server event")
+  // console.log("server event");
   const result = await client.query(GET_QUERY, {}).toPromise();
   return result?.data;
-}
+};
 
 export const clientLoader = async ({ serverLoader }: Route.ClientLoaderArgs) => {
-  console.log("client event")
+  // console.log("client event");
   const result = await client.query(GET_QUERY, {}).toPromise();
   return result?.data;
-}
+};
 
 export const clientAction = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData()
+  const formData = await request.formData();
 
-  const name = formData.get("name") as string
-  const description = formData.get("description") as string
-  const time1 = new Date()
-  const time2 = new Date()
+  const name = formData.get("name") as string;
+  const description = formData.get("description") as string;
+  const time1 = new Date();
+  const time2 = new Date();
 
-  await client.mutation(ADD_QUERY, { name: name, description: description, startTime: time1, endTime: time2 }).toPromise();
-} 
+  await client.mutation(
+    ADD_QUERY, {
+      name: name,
+      description: description,
+      startTime: time1,
+      endTime: time2
+    }).toPromise();
+};
 
 const Test2 = ({ loaderData }: Route.ComponentProps) => {
   return (
@@ -101,13 +111,12 @@ const Test2 = ({ loaderData }: Route.ComponentProps) => {
       </div>
 
     </div>
-  )
-}
-
+  );
+};
 
 const deleteStuff = async (id: UUID) => {
   await client.mutation(DELETE_QUERY, { id: id }).toPromise();
-}
+};
 
 const DisplayInfo = ({ event }: any) => {
   return (
@@ -115,9 +124,7 @@ const DisplayInfo = ({ event }: any) => {
        {event.name} {event.description} {event.startTime} {event.endTime}
       <button onClick={() => deleteStuff(event.id)}> delete </button>
     </li>
-  )
-}
+  );
+};
 
-
-
-export default Test2
+export default Test2;

@@ -1,12 +1,12 @@
-import { gql } from "urql";
+import React from "react";
 import type { Route } from "./+types/test";
 
 export const meta = ({}: Route.MetaArgs) => {
   return [
     { title: "test1" },
-    { name: "description", content: "Welcome to React Router!" },
+    { name: "description", content: "Welcome to React Router!" }
   ];
-}
+};
 
 const Test = () => {
   return (
