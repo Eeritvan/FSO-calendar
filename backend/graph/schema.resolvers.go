@@ -33,8 +33,8 @@ func (r *mutationResolver) UpdateEvent(ctx context.Context, id uuid.UUID, input 
 }
 
 // DeleteEvent is the resolver for the deleteEvent field.
-func (r *mutationResolver) DeleteEvent(ctx context.Context, input uuid.UUID) (bool, error) {
-	result, err := events.DB_DeleteEvent(ctx, r.DB, input)
+func (r *mutationResolver) DeleteEvent(ctx context.Context, id uuid.UUID) (bool, error) {
+	result, err := events.DB_DeleteEvent(ctx, r.DB, id)
 	if err != nil {
 		return false, err
 	}

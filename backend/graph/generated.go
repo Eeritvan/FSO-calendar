@@ -59,7 +59,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateEvent func(childComplexity int, input model.EventInput) int
-		DeleteEvent func(childComplexity int, input uuid.UUID) int
+		DeleteEvent func(childComplexity int, id uuid.UUID) int
 		UpdateEvent func(childComplexity int, id uuid.UUID, input model.UpdateEventInput) int
 	}
 
@@ -71,7 +71,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateEvent(ctx context.Context, input model.EventInput) (*model.Event, error)
 	UpdateEvent(ctx context.Context, id uuid.UUID, input model.UpdateEventInput) (*model.Event, error)
-	DeleteEvent(ctx context.Context, input uuid.UUID) (bool, error)
+	DeleteEvent(ctx context.Context, id uuid.UUID) (bool, error)
 }
 type QueryResolver interface {
 	AllEvents(ctx context.Context) ([]*model.Event, error)
@@ -153,7 +153,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteEvent(childComplexity, args["input"].(uuid.UUID)), true
+		return e.complexity.Mutation.DeleteEvent(childComplexity, args["id"].(uuid.UUID)), true
 
 	case "Mutation.updateEvent":
 		if e.complexity.Mutation.UpdateEvent == nil {
@@ -326,19 +326,19 @@ func (ec *executionContext) field_Mutation_createEvent_argsInput(
 func (ec *executionContext) field_Mutation_deleteEvent_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Mutation_deleteEvent_argsInput(ctx, rawArgs)
+	arg0, err := ec.field_Mutation_deleteEvent_argsID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
-	args["input"] = arg0
+	args["id"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Mutation_deleteEvent_argsInput(
+func (ec *executionContext) field_Mutation_deleteEvent_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (uuid.UUID, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-	if tmp, ok := rawArgs["input"]; ok {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
 		return ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
 	}
 
@@ -875,7 +875,7 @@ func (ec *executionContext) _Mutation_deleteEvent(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteEvent(rctx, fc.Args["input"].(uuid.UUID))
+		return ec.resolvers.Mutation().DeleteEvent(rctx, fc.Args["id"].(uuid.UUID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

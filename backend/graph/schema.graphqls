@@ -30,5 +30,5 @@ type Query {
 type Mutation {
   createEvent(input: EventInput!): Event!
   updateEvent(id: UUID!, input: UpdateEventInput!): Event!
-  deleteEvent(input: UUID!): Boolean!
+  deleteEvent(id: UUID!): Boolean!
 }
