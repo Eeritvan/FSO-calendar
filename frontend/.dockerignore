@@ -1,0 +1,8 @@
+.gitignore
+.dockerignore
+.react-router
+build
+node_modules
+eslint.config.js
+README.md
+Dockerfile

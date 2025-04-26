@@ -18,5 +18,15 @@ export default defineConfig({
 
     tailwindcss(),
     reactRouter(),
-    tsconfigPaths()]
+    tsconfigPaths()],
+
+  // fix for dockerfile:
+  resolve:
+		process.env.NODE_ENV === "development"
+		  ? {}
+		  : {
+		    alias: {
+		      "react-dom/server": "react-dom/server.node"
+		    }
+		  }
 });
