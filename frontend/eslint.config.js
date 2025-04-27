@@ -35,10 +35,7 @@ export default defineConfig([
     },
     rules: {
       "react-hooks/react-compiler": ["error"],
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true }
-      ],
+      "react-refresh/only-export-components": ["off"],
       semi: ["error", "always"],
       quotes: ["error", "double"],
       indent: ["error", 2],
@@ -64,7 +61,8 @@ export default defineConfig([
       "react/no-multi-comp": ["error"],
       "react/sort-comp": ["error"],
       "react/self-closing-comp": ["error"],
-      "react/jsx-wrap-multilines": ["error"]
+      "react/jsx-wrap-multilines": ["error"],
+      "react/react-in-jsx-scope": ["off"]
     }
   }
 ]);
