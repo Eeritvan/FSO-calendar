@@ -1,17 +1,17 @@
-import React from "react";
-import type { Route } from "./+types/test";
-
-export const meta = ({}: Route.MetaArgs) => {
-  return [
-    { title: "test1" },
-    { name: "description", content: "Welcome to React Router!" }
-  ];
-};
+import { useNavigate } from "react-router";
 
 const Test = () => {
+  const navigate = useNavigate();
+
   return (
     <div>
-      test
+      <button onClick={() => navigate(-1)}>
+        back
+      </button>
+
+      testtest
+
+      testtest
     </div>
   );
 };

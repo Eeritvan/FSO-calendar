@@ -1,10 +1,8 @@
 /* eslint-disable react/no-multi-comp */
-import React from "react";
 import {
   isRouteErrorResponse,
   Links,
   Meta,
-  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration
@@ -82,8 +80,6 @@ export const ErrorBoundary = ({ error }: Route.ErrorBoundaryProps) => {
 const App = () => {
   return (
     <Provider value={client}>
-      <NavLink to="/"> test </NavLink>
-      <NavLink to="/test2"> insane </NavLink>
       <Outlet />
     </Provider>
   );
