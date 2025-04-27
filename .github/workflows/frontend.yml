@@ -3,7 +3,7 @@ name: frontend pipeline
 on:
   push:
     paths:
-      - frontend
+      - frontend/**
 
 jobs:
   lint:
