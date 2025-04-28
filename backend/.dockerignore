@@ -1,0 +1,7 @@
+.gitignore
+.dockerignore
+calendar-backend
+Dockerfile
+Makefile
+testdirs.txt
+tools.go

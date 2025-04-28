@@ -5,7 +5,7 @@ COPY . .
 
 RUN go mod download && \
     go mod verify && \
-    GOOS=linux GOARCH=amd64 go build -ldflags "-w -s -extldflags '-static -Wl,--strip-all,--gc-sections'"
+    GOOS=linux GOARCH=amd64 go build -ldflags "-w -s -extldflags '-static -Wl,--strip-all,--gc-sections'" -o calendar-backend
 
 
 FROM scratch
