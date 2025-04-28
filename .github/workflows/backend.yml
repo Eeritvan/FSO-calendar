@@ -59,7 +59,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./backend
-          push: false
+          push: true
           tags: |
             eeritvan/calendar-backend:${{ github.sha }}
             eeritvan/calendar-backend:latest
