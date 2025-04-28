@@ -1,9 +1,12 @@
 name: backend pipeline
 
 on:
-  push:
-    paths:
-      - backend/**
+  workflow_call:
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
 
 jobs:
   lint:
@@ -59,7 +62,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./backend
-          push: true
+          push: false
           tags: |
             eeritvan/calendar-backend:${{ github.sha }}
             eeritvan/calendar-backend:latest

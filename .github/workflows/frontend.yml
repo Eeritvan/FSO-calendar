@@ -1,9 +1,12 @@
 name: frontend pipeline
 
 on:
-  push:
-    paths:
-      - frontend/**
+  workflow_call:
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
 
 jobs:
   lint:
@@ -40,7 +43,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
-          push: true
+          push: false
           tags: |
             eeritvan/calendar-frontend:${{ github.sha }}
             eeritvan/calendar-frontend:latest

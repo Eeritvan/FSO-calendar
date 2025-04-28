@@ -1,0 +1,116 @@
+name: CI/CD pipeline
+
+on:
+  push:
+    branches:
+      - main
+    # paths:
+      # - 'frontend/**'
+      # - 'backend/**'
+
+jobs:
+  paths-filter:
+    runs-on: ubuntu-24.04
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - '/**'
+            backend:
+              - 'backend/**'
+
+  frontend:
+    needs: [paths-filter]
+    if: ${{ needs.paths-filter.outputs.frontend == 'true' }}
+    uses: ./.github/workflows/frontend.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  backend:
+    needs: [paths-filter]
+    if: ${{ needs.paths-filter.outputs.backend == 'true' }}
+    uses: ./.github/workflows/backend.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  e2e:
+    needs: [paths-filter, frontend, backend]
+    if: |
+        always() && (
+          (needs.paths-filter.outputs.frontend == 'true' ||
+          needs.paths-filter.outputs.backend == 'true') &&
+          (needs.frontend.result == 'success' || needs.frontend.result == 'skipped') &&
+          (needs.backend.result == 'success' || needs.backend.result == 'skipped')
+        )
+    runs-on: ubuntu-24.04
+
+  deploy-frontend:
+    needs: [paths-filter, e2e]
+    if: |
+      always() && (
+        needs.paths-filter.outputs.frontend == 'true' &&
+        needs.e2e.result == 'success'
+      )
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+    - uses: actions/checkout@v4
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Download image artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: calendar-frontend-image
+        path: ${{ runner.temp }}
+    - name: Load image
+      run: |
+        docker load --input ${{ runner.temp }}/calendar-frontend-image.tar
+    - name: Push Docker image
+      run: |
+        docker push eeritvan/calendar-frontend:${{ github.sha }}
+        docker push eeritvan/calendar-frontend:latest
+
+  deploy-backend:
+    needs: [paths-filter, e2e]
+    if: |
+      always() && (
+        needs.paths-filter.outputs.backend == 'true' &&
+        needs.e2e.result == 'success'
+      )
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+    - uses: actions/checkout@v4
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Download image artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: calendar-backend-image
+        path: ${{ runner.temp }}
+    - name: Load image
+      run: |
+        docker load --input ${{ runner.temp }}/calendar-backend-image.tar
+    - name: Push Docker image
+      run: |
+        docker push eeritvan/calendar-backend:${{ github.sha }}
+        docker push eeritvan/calendar-backend:latest
