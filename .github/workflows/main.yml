@@ -22,7 +22,7 @@ jobs:
         with:
           filters: |
             frontend:
-              - '/**'
+              - 'frontend/**'
             backend:
               - 'backend/**'
 
@@ -52,6 +52,10 @@ jobs:
           (needs.backend.result == 'success' || needs.backend.result == 'skipped')
         )
     runs-on: ubuntu-24.04
+    steps:
+      - name: Print TODO for setup
+        run: |
+          echo "todo"
 
   deploy-frontend:
     needs: [paths-filter, e2e]
