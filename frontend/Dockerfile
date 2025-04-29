@@ -16,12 +16,9 @@ WORKDIR /app
 COPY --from=build /app/build ./build
 COPY package.json bun.lock ./
 
-RUN addgroup -S app && adduser -S -G app app && \
-    bun i -p --frozen-lockfile && \
+RUN bun i -p --frozen-lockfile && \
     rm -rf /root/.bun/install/cache /app/bun.lock /tmp/*
 
 EXPOSE 3000
-
-USER app
 
 CMD ["bun", "run", "start"]

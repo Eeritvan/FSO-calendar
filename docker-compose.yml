@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:3000"
+    depends_on:
+      - backend
+    environment:
+      - VITE_BACKEND_URL=http://backend:6969
+
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      - DB_URL=postgresql://postgres:postgres@db:5432/postgres
+      - PORT=6969
+    depends_on:
+      - db
+    restart: on-failure
+
+  db:
+    image: postgres:alpine
+    container_name: db
+    environment:
+      - POSTGRES_PASSWORD=postgres
