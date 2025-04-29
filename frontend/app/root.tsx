@@ -17,6 +17,8 @@ import {
   Provider
 } from "urql";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const isServerSide = typeof window === "undefined";
 
 const ssr = ssrExchange({
@@ -25,7 +27,7 @@ const ssr = ssrExchange({
 });
 
 export const client = new Client({
-  url: "http://localhost:8081/query",
+  url: BACKEND_URL,
   suspense: true,
   exchanges: [cacheExchange, ssr, fetchExchange]
 });
