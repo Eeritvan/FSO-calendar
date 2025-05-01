@@ -61,17 +61,21 @@ const MainView = ({ loaderData }: Route.ComponentProps) => {
 
       All events
       <ul>
-        {loaderData?.allEvents.map((event: EventType) => (
-          <li key={event.id}>
-            {event.name} {event.description} {event.startTime} {event.endTime}
-            <Form
-              action={`/delete/${event.id}`}
-              method="post"
-            >
-              <button type="submit"> delete </button>
-            </Form>
-          </li>
-        ))}
+        {loaderData?.allEvents && loaderData.allEvents.length > 0 ? (
+          loaderData.allEvents.map((event: EventType) => (
+            <li key={event.id}>
+              {event.name} {event.description} {event.startTime} {event.endTime}
+              <Form
+                action={`/delete/${event.id}`}
+                method="post"
+              >
+                <button type="submit"> delete </button>
+              </Form>
+            </li>
+          ))
+        ) : (
+          <p>No events found.</p>
+        )}
       </ul>
     </div>
   );

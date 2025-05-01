@@ -6,7 +6,11 @@ COPY package.json bun.lock ./
 RUN bun i --frozen-lockfile
 
 COPY . .
-RUN bun run build 
+
+ARG VITE_BACKEND_URL
+ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
+
+RUN bun run build
 
 
 FROM oven/bun:alpine
@@ -18,7 +22,5 @@ COPY package.json bun.lock ./
 
 RUN bun i -p --frozen-lockfile && \
     rm -rf /root/.bun/install/cache /app/bun.lock /tmp/*
-
-EXPOSE 3000
 
 CMD ["bun", "run", "start"]
