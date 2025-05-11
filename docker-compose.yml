@@ -17,7 +17,7 @@ services:
       cache_from:
         - type=registry,ref=eeritvan/calendar-frontend:buildcache
       args:
-        VITE_BACKEND_URL: /query
+        VITE_BACKEND_URL: /api
     container_name: frontend
     depends_on:
       - backend

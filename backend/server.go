@@ -66,7 +66,7 @@ func main() {
 	})
 
 	http.Handle("/healthz", http.HandlerFunc(healthCheck))
-	http.Handle("/query", srv)
+	http.Handle("/api", srv)
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
