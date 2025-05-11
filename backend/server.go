@@ -33,18 +33,15 @@ func main() {
 
 	ctx := context.Background()
 
-	DB := db.ConnectToDB(ctx)
-	if DB != nil {
-		if err := db.CheckForTable(DB, ctx); err != nil {
-			log.Fatalf("Checking for table failed: %v", err)
-		}
-		defer func() {
-			if err := DB.Close(ctx); err != nil {
-				// todo: better error handling
-				log.Printf("%v", err)
-			}
-		}()
+	queries, conn, err := db.ConnectToDB(ctx)
+	if err != nil {
+		log.Fatal("failed to initialize database service")
 	}
+	defer func() {
+		if err := conn.Close(ctx); err != nil {
+			log.Fatalln("failed to close DB:", err)
+		}
+	}()
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -53,7 +50,7 @@ func main() {
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			DB: DB,
+			Queries: queries,
 		},
 	}))
 

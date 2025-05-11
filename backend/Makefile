@@ -21,5 +21,8 @@ lint:
 clean:
 	rm -f $(BINARY_NAME)
 
-generate:
+sqlc:
+	sqlc generate
+
+generate: sqlc
 	$(GORUN) github.com/99designs/gqlgen

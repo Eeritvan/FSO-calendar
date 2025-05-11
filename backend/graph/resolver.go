@@ -1,11 +1,13 @@
 package graph
 
-import "github.com/jackc/pgx/v5"
+import (
+	db "github.com/eeritvan/calendar/internal/db/sqlc"
+)
 
 // This file will not be regenerated automatically.
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	DB *pgx.Conn
+	Queries *db.Queries
 }

@@ -8,48 +8,61 @@ import (
 	"context"
 
 	"github.com/eeritvan/calendar/graph/model"
-	"github.com/eeritvan/calendar/internal/events"
+	db "github.com/eeritvan/calendar/internal/db/sqlc"
 	"github.com/google/uuid"
 )
 
 // CreateEvent is the resolver for the createEvent field.
 func (r *mutationResolver) CreateEvent(ctx context.Context, input model.EventInput) (*model.Event, error) {
-	event, err := events.DB_CreateEvent(ctx, r.DB, input)
+	event, err := r.Queries.CreateEvent(ctx, db.CreateEventParams(input))
 	if err != nil {
 		return nil, err
 	}
 
-	return event, nil
+	return (*model.Event)(&event), nil
 }
 
 // UpdateEvent is the resolver for the updateEvent field.
 func (r *mutationResolver) UpdateEvent(ctx context.Context, id uuid.UUID, input model.UpdateEventInput) (*model.Event, error) {
-	event, err := events.DB_UpdateEvent(ctx, r.DB, id, input)
+	event, err := r.Queries.UpdateEvent(ctx, db.UpdateEventParams{
+		ID:          id,
+		Name:        input.Name,
+		Description: input.Description,
+		StartTime:   input.StartTime,
+		EndTime:     input.EndTime,
+	})
 	if err != nil {
+		// todo: better error handling
 		return nil, err
 	}
 
-	return event, nil
+	return (*model.Event)(&event), nil
 }
 
 // DeleteEvent is the resolver for the deleteEvent field.
 func (r *mutationResolver) DeleteEvent(ctx context.Context, id uuid.UUID) (bool, error) {
-	result, err := events.DB_DeleteEvent(ctx, r.DB, id)
+	err := r.Queries.DeleteEvent(ctx, id)
 	if err != nil {
+		// todo: better error handling
 		return false, err
 	}
-
-	return result, nil
+	return true, nil
 }
 
 // AllEvents is the resolver for the allEvents field.
 func (r *queryResolver) AllEvents(ctx context.Context) ([]*model.Event, error) {
-	events, err := events.DB_getAllEvents(ctx, r.DB)
+	events, err := r.Queries.ListEvents(ctx)
 	if err != nil {
+		// todo: better error handling
 		return nil, err
 	}
 
-	return events, nil
+	modelEvents := make([]*model.Event, len(events))
+	for i := range events {
+		modelEvents[i] = (*model.Event)(&events[i])
+	}
+
+	return modelEvents, nil
 }
 
 // Mutation returns MutationResolver implementation.
