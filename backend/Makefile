@@ -24,5 +24,11 @@ clean:
 sqlc:
 	sqlc generate
 
+sqlc-vet:
+    sqlc vet
+
+sqlc-diff:
+    sqlc diff
+
 generate: sqlc
 	$(GORUN) github.com/99designs/gqlgen
