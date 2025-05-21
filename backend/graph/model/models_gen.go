@@ -16,6 +16,11 @@ type Event struct {
 	EndTime     time.Time `json:"endTime"`
 }
 
+type EventChangePayload struct {
+	Action string `json:"action"`
+	Event  *Event `json:"event"`
+}
+
 type EventInput struct {
 	Name        string    `json:"name"`
 	Description *string   `json:"description,omitempty"`
@@ -27,6 +32,9 @@ type Mutation struct {
 }
 
 type Query struct {
+}
+
+type Subscription struct {
 }
 
 type UpdateEventInput struct {

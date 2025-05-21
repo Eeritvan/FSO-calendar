@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"slices"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -12,6 +14,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/eeritvan/calendar/graph"
 	"github.com/eeritvan/calendar/internal/db"
+	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -33,13 +36,13 @@ func main() {
 
 	ctx := context.Background()
 
-	queries, conn, err := db.ConnectToDB(ctx)
+	dbService, err := db.ConnectToDB(ctx)
 	if err != nil {
 		log.Fatal("failed to initialize database service")
 	}
 	defer func() {
-		if err := conn.Close(ctx); err != nil {
-			log.Fatalln("failed to close DB:", err)
+		if err := dbService.Conn.Close(ctx); err != nil {
+			log.Printf("failed to close DB connection: %v", err)
 		}
 	}()
 
@@ -50,12 +53,25 @@ func main() {
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			Queries: queries,
+			DB: dbService,
 		},
 	}))
 
-	srv.AddTransport(transport.Options{})
-	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.Websocket{
+		KeepAlivePingInterval: 10 * time.Second,
+		Upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				origin := r.Header.Get("Origin")
+				if origin == "" || origin == r.Header.Get("Host") {
+					return true
+				}
+
+				return slices.Contains(
+					[]string{":5173", "http://localhost"}, origin,
+				)
+			},
+		},
+	})
 	srv.AddTransport(transport.POST{})
 
 	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))

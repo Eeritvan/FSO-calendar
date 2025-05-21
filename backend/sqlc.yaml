@@ -5,8 +5,8 @@ sql:
     schema: "schema.sql"
     gen:
       go:
-        package: "db"
-        out: "internal/db/sqlc"
+        package: "sqlc"
+        out: "internal/sqlc"
         sql_package: "pgx/v5"
         overrides:
           - db_type: "uuid"

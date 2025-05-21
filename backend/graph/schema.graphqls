@@ -32,3 +32,12 @@ type Mutation {
   updateEvent(id: UUID!, input: UpdateEventInput!): Event!
   deleteEvent(id: UUID!): Boolean!
 }
+
+type EventChangePayload {
+  action: String!
+  event: Event!
+}
+
+type Subscription {
+  eventChanged: EventChangePayload!
+}
